@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Jsem smažka</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #232b35; color: #fff; text-align: center; margin: 0; }
+    h1 { margin: 40px 0 10px 0; font-size: 2.4em; }
+    #camera, #result { margin: 20px auto; }
+    #camera video, #preview img { border-radius: 15px; box-shadow: 0 0 12px #0008; }
+    button { margin: 16px 0; padding: 18px 38px; font-size: 1.15em; border-radius: 30px; border: none; background: #fc0066; color: #fff; cursor: pointer; transition: background 0.2s; }
+    button:active { background: #8c0040; }
+    #result-box { margin: 35px auto 0 auto; background: #15191d; padding: 32px 16px; border-radius: 18px; max-width: 340px; box-shadow: 0 2px 10px #0005; }
+    .level { font-size: 2.1em; margin: 0 0 12px 0; font-weight: bold; }
+    .desc { font-size: 1.05em; color: #d3d3d3; }
+    .hlaska { margin-top: 18px; color: #ffd16d; font-size: 1.13em; font-style: italic; }
+    @media (max-width:600px) {
+      #result-box { padding: 14px 2vw; }
+      button { width: 85vw; max-width: 320px; }
+      h1 { font-size: 2em; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Jsem smažka</h1>
+  <div id="camera">
+    <video id="video" width="320" height="240" autoplay muted playsinline style="background:#222;"></video><br>
+    <button id="snap">Vyfoť obličej</button>
+  </div>
+  <div id="preview" style="display:none;">
+    <img id="photo" width="320" height="240" alt="Selfie"><br>
+    <button id="analyze">Zanalyzuj jak moc seš v háji</button>
+    <button id="retake" style="background:#222;margin-left:15px;">Zkusit znova</button>
+  </div>
+  <div id="result" style="display:none;">
+    <div id="result-box">
+      <div class="level" id="level"></div>
+      <div class="desc" id="desc"></div>
+      <div class="hlaska" id="hlaska"></div>
+      <button id="again">Nová fotka</button>
+      <button id="share" style="background:#365dff;margin-left:15px;">Pošli kámošům</button>
+    </div>
+  </div>
+  <script>
+    // Úrovně smažky
+    const levels = [
+      { name: "Začátečník večírků", desc: "Hele, vypadáš celkem fresh! Ještě ti to myslí, ale můžeš přitvrdit." },
+      { name: "Pátek odpoledne", desc: "Lehký náznak únavy, pořád zvládáš odpovídat na zprávy bez překlepů." },
+      { name: "Sobota po tahu", desc: "Mírná devastace, kruhy pod očima jak panda, ale pořád stojíš." },
+      { name: "Legenda nonstopu", desc: "Masivní kruhy pod očima, zarudlý oči, tělo funguje na kofein a výčitky." },
+      { name: "Zombie z baru", desc: "Troska, spíš už tě někdo nese domů. Připomínáš chodící reklamu na detox." },
+      { name: "Chce to detox kámo", desc: "Stav nekomentovatelný, už ti ani rodiče neberou telefon." }
+    ];
+
+    // Vtipné hlášky (univerzální, randomizované)
+    const hlasky = [
+      "Tak ty už to neber kámo",
+      "Tady je někdo střelmistr",
+      "Jedeš bomby ale už brzdíme",
+      "Vypij vodu a zkus jít domů po svých",
+      "Dneska tě na rodinný oběd radši nepouštěj",
+      "Mamka by byla pyšná",
+      "Už tě hledají ve vrátnici detoxu",
+      "Tvoje selfie má chuť Red Bullu",
+      "Posílám číslo na taxíka",
+      "Gratulace právě jsi unlocknul level – Lidská zombie",
+      "Nevypadáš špatně ale ráno tě čeká realita",
+      "Máš kruhy jak Saturn",
+      "Dneska tě pozná i vrátný na záchytce",
+      "Chceš ještě shot nebo už radši rohlík"
+    ];
+
+    // Kamera
+    const video = document.getElementById('video');
+    const snapBtn = document.getElementById('snap');
+    const preview = document.getElementById('preview');
+    const photo = document.getElementById('photo');
+    const analyzeBtn = document.getElementById('analyze');
+    const retakeBtn = document.getElementById('retake');
+    const result = document.getElementById('result');
+    const levelEl = document.getElementById('level');
+    const descEl = document.getElementById('desc');
+    const hlaskaEl = document.getElementById('hlaska');
+    const againBtn = document.getElementById('again');
+    const shareBtn = document.getElementById('share');
+
+    let stream = null;
+    let lastImage = null;
+
+    async function openCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+      } catch (e) {
+        alert('Nepovolený přístup ke kameře. Apka nejede bez selfie!');
+      }
+    }
+    openCamera();
+
+    snapBtn.onclick = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/png');
+      photo.src = dataUrl;
+      lastImage = dataUrl;
+      document.getElementById('camera').style.display = 'none';
+      preview.style.display = '';
+    };
+
+    retakeBtn.onclick = () => {
+      preview.style.display = 'none';
+      document.getElementById('camera').style.display = '';
+    };
+
+    analyzeBtn.onclick = () => {
+      const idx = Math.floor(Math.random() * levels.length);
+      levelEl.textContent = levels[idx].name;
+      descEl.textContent = levels[idx].desc;
+      hlaskaEl.textContent = hlasky[Math.floor(Math.random() * hlasky.length)];
+      preview.style.display = 'none';
+      result.style.display = '';
+    };
+
+    againBtn.onclick = () => {
+      result.style.display = 'none';
+      document.getElementById('camera').style.display = '';
+    };
+
+    shareBtn.onclick = async () => {
+      let text = `Moje úroveň smažky: ${levelEl.textContent}\n${descEl.textContent}\n${hlaskaEl.textContent}`;
+      if (navigator.share) {
+        await navigator.share({
+          title: 'Jsem smažka',
+          text,
+          files: lastImage ? [await (await fetch(lastImage)).blob()] : undefined,
+        });
+      } else {
+        prompt('Pošli výsledek kámošovi:', text);
+      }
+    };
+  </script>
+</body>
+</html>
