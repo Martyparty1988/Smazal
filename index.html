@@ -1,146 +1,294 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8">
-  <title>Jsem smažka</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #232b35; color: #fff; text-align: center; margin: 0; }
-    h1 { margin: 40px 0 10px 0; font-size: 2.4em; }
-    #camera, #result { margin: 20px auto; }
-    #camera video, #preview img { border-radius: 15px; box-shadow: 0 0 12px #0008; }
-    button { margin: 16px 0; padding: 18px 38px; font-size: 1.15em; border-radius: 30px; border: none; background: #fc0066; color: #fff; cursor: pointer; transition: background 0.2s; }
-    button:active { background: #8c0040; }
-    #result-box { margin: 35px auto 0 auto; background: #15191d; padding: 32px 16px; border-radius: 18px; max-width: 340px; box-shadow: 0 2px 10px #0005; }
-    .level { font-size: 2.1em; margin: 0 0 12px 0; font-weight: bold; }
-    .desc { font-size: 1.05em; color: #d3d3d3; }
-    .hlaska { margin-top: 18px; color: #ffd16d; font-size: 1.13em; font-style: italic; }
-    @media (max-width:600px) {
-      #result-box { padding: 14px 2vw; }
-      button { width: 85vw; max-width: 320px; }
-      h1 { font-size: 2em; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jsem Smažka - Kyber-analýza</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            touch-action: manipulation;
+        }
+        h1 {
+            font-family: 'Chakra Petch', sans-serif;
+        }
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .animated-gradient {
+            background: linear-gradient(-45deg, #0f0c29, #1c1a3a, #0d1a3a, #0f0c29);
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease infinite;
+        }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(45, 212, 191, 0.2);
+        }
+        .neon-glow {
+            text-shadow: 0 0 5px #2dd4bf, 0 0 10px #2dd4bf, 0 0 15px #2dd4bf, 0 0 20px #2dd4bf;
+        }
+        .text-gradient {
+            background: linear-gradient(90deg, #2dd4bf, #38bdf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top: 4px solid #2dd4bf;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        #scan-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+    </style>
 </head>
-<body>
-  <h1>Jsem smažka</h1>
-  <div id="camera">
-    <video id="video" width="320" height="240" autoplay muted playsinline style="background:#222;"></video><br>
-    <button id="snap">Vyfoť obličej</button>
-  </div>
-  <div id="preview" style="display:none;">
-    <img id="photo" width="320" height="240" alt="Selfie"><br>
-    <button id="analyze">Zanalyzuj jak moc seš v háji</button>
-    <button id="retake" style="background:#222;margin-left:15px;">Zkusit znova</button>
-  </div>
-  <div id="result" style="display:none;">
-    <div id="result-box">
-      <div class="level" id="level"></div>
-      <div class="desc" id="desc"></div>
-      <div class="hlaska" id="hlaska"></div>
-      <button id="again">Nová fotka</button>
-      <button id="share" style="background:#365dff;margin-left:15px;">Pošli kámošům</button>
+<body class="animated-gradient text-white flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-md mx-auto glass-card rounded-2xl shadow-2xl p-6 md:p-8 text-center">
+        
+        <h1 class="text-5xl md:text-6xl font-bold text-gradient mb-2">Jsem Smažka</h1>
+        <p class="text-gray-400 mb-6">Kybernetická analýza existenciální krize.</p>
+
+        <!-- Camera View -->
+        <div id="camera-container" class="relative w-full aspect-video bg-black/30 rounded-xl mb-6 overflow-hidden border border-white/20">
+            <video id="video" class="w-full h-full object-cover" autoplay playsinline></video>
+            <canvas id="scan-canvas"></canvas>
+            <div id="permission-prompt" class="absolute inset-0 flex flex-col items-center justify-center p-4 bg-black/50">
+                <p class="mb-4 text-gray-300 font-semibold">Povol kameru a odhal pravdu.</p>
+                <button id="start-camera" class="bg-teal-400 hover:bg-teal-500 text-gray-900 font-bold py-2 px-5 rounded-lg transition-transform transform hover:scale-105">
+                    Spustit kameru
+                </button>
+            </div>
+        </div>
+
+        <!-- Control Button -->
+        <button id="analyze-button" class="w-full bg-gradient-to-r from-teal-400 to-blue-500 text-gray-900 font-bold text-lg py-3 px-6 rounded-xl hover:opacity-90 transition-all duration-300 transform hover:scale-105 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed disabled:transform-none disabled:opacity-50" disabled>
+            Spustit kyber-analýzu
+        </button>
+
+        <!-- Result Section -->
+        <div id="result-section" class="mt-8 hidden">
+            <div id="loader" class="loader mx-auto mb-4"></div>
+            <p id="loading-text" class="text-lg text-teal-300 animate-pulse">Kalibrace senzorů... Skenuji biometrii...</p>
+            
+            <div id="result-content" class="hidden">
+                <h2 class="text-2xl font-semibold text-gradient mb-2">Verdikt:</h2>
+                <p id="result-percentage" class="text-6xl font-bold text-white my-3 neon-glow"></p>
+                <p id="result-message" class="text-lg text-gray-300 px-4"></p>
+            </div>
+        </div>
+
     </div>
-  </div>
-  <script>
-    // Úrovně smažky
-    const levels = [
-      { name: "Začátečník večírků", desc: "Hele, vypadáš celkem fresh! Ještě ti to myslí, ale můžeš přitvrdit." },
-      { name: "Pátek odpoledne", desc: "Lehký náznak únavy, pořád zvládáš odpovídat na zprávy bez překlepů." },
-      { name: "Sobota po tahu", desc: "Mírná devastace, kruhy pod očima jak panda, ale pořád stojíš." },
-      { name: "Legenda nonstopu", desc: "Masivní kruhy pod očima, zarudlý oči, tělo funguje na kofein a výčitky." },
-      { name: "Zombie z baru", desc: "Troska, spíš už tě někdo nese domů. Připomínáš chodící reklamu na detox." },
-      { name: "Chce to detox kámo", desc: "Stav nekomentovatelný, už ti ani rodiče neberou telefon." }
-    ];
+    
+    <footer class="mt-8 text-center text-gray-500 text-sm">
+        <p>&copy; 2024 Corporation 'Na plech'.</p>
+        <p class="mt-1">Tohle není lékařská rada. Pokud vidíš draky, je to tvůj problém.</p>
+    </footer>
 
-    // Vtipné hlášky (univerzální, randomizované)
-    const hlasky = [
-      "Tak ty už to neber kámo",
-      "Tady je někdo střelmistr",
-      "Jedeš bomby ale už brzdíme",
-      "Vypij vodu a zkus jít domů po svých",
-      "Dneska tě na rodinný oběd radši nepouštěj",
-      "Mamka by byla pyšná",
-      "Už tě hledají ve vrátnici detoxu",
-      "Tvoje selfie má chuť Red Bullu",
-      "Posílám číslo na taxíka",
-      "Gratulace právě jsi unlocknul level – Lidská zombie",
-      "Nevypadáš špatně ale ráno tě čeká realita",
-      "Máš kruhy jak Saturn",
-      "Dneska tě pozná i vrátný na záchytce",
-      "Chceš ještě shot nebo už radši rohlík"
-    ];
+    <script>
+        const video = document.getElementById('video');
+        const startButton = document.getElementById('start-camera');
+        const analyzeButton = document.getElementById('analyze-button');
+        const permissionPrompt = document.getElementById('permission-prompt');
+        const resultSection = document.getElementById('result-section');
+        const loader = document.getElementById('loader');
+        const loadingText = document.getElementById('loading-text');
+        const resultContent = document.getElementById('result-content');
+        const resultPercentage = document.getElementById('result-percentage');
+        const resultMessage = document.getElementById('result-message');
+        
+        const canvas = document.getElementById('scan-canvas');
+        const ctx = canvas.getContext('2d');
+        let animationFrameId;
 
-    // Kamera
-    const video = document.getElementById('video');
-    const snapBtn = document.getElementById('snap');
-    const preview = document.getElementById('preview');
-    const photo = document.getElementById('photo');
-    const analyzeBtn = document.getElementById('analyze');
-    const retakeBtn = document.getElementById('retake');
-    const result = document.getElementById('result');
-    const levelEl = document.getElementById('level');
-    const descEl = document.getElementById('desc');
-    const hlaskaEl = document.getElementById('hlaska');
-    const againBtn = document.getElementById('again');
-    const shareBtn = document.getElementById('share');
+        const funnyMessages = [
+            // Původní a přitvrzené
+            "Tvoje zorničky jsou tak velký, že by tě nepustili ani do Studia 54 v jeho nejlepších letech.",
+            "Vypadáš, že jsi právě předjel kamion plnej jehel. V odstavným pruhu.",
+            "Stav: 'Perníkový táta'. Jenom bez toho vaření.",
+            "Analýza ukazuje stopy... všeho. Absolutně všeho.",
+            "Volali ze Studia 54, že prej už máš doživotní zákaz.",
+            "Předjíždíš jehly na dálnici a perník ti kouká z očí.",
+            "Jsi tak mimo, že by tě ani Google Maps nenašly.",
+            "Gratuluji, právě jsi odemkl schopnost fotosyntézy.",
+            "Realita ti právě dala facku, ale tys to necítil.",
+            "Úroveň sjetosti: Snažíš se odemknout byt ovladačem od televize.",
+            "Vesmírná odysea hadr. Ty jsi na tripu do ledničky.",
+            "Analyzátor se přehřál. Tvoje sjetost je mimo stupnici.",
+            "Tvoje třetí oko je plně otevřené.",
+            "Vypadáš, že bys teď vyřešil záhady vesmíru.",
+            // Nová, ještě ostřejší várka
+            "Tvoje zorničky mají vlastní poštovní směrovací číslo.",
+            "Vypadáš, že jsi právě vedl filozofickou debatu s parkovacím automatem. A prohrál.",
+            "Stav: 'Čas je jenom sociální konstrukt, stejně jako kalhoty'.",
+            "Analýza doporučuje okamžitý restart. Ne počítače, tebe.",
+            "Tvoje krevní oběh je teď z 90 % energetický nápoj a z 10 % špatný rozhodnutí.",
+            "I tvoje stínová postava si od tebe drží odstup.",
+            "Gratuluji, překročil jsi horizont událostí. Zpáteční lístek neexistuje.",
+            "Sleduješ mouchu na zdi už 20 minut. A fandíš jí.",
+            "Vypadáš, jako by ti Andy Warhol osobně navrhoval kruhy pod očima.",
+            "Tvoje DNA volá o pomoc. Latinsky.",
+            "I Schrödingerova kočka ví, že jsi úplně mimo.",
+            "Vypadáš, že se snažíš sníst vlastní myšlenky.",
+            "Tvoje paranoia má vlastní fanklub.",
+            "Stav: Komunikuješ s nábytkem pomocí telepatie."
+        ];
 
-    let stream = null;
-    let lastImage = null;
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                };
+                permissionPrompt.classList.add('hidden');
+                analyzeButton.disabled = false;
+            } catch (err) {
+                console.error("Chyba při přístupu ke kameře: ", err);
+                permissionPrompt.innerHTML = `<p class="text-red-400">Nepodařilo se získat přístup ke kameře. Zkontroluj prosím oprávnění v prohlížeči.</p>`;
+            }
+        }
 
-    async function openCamera() {
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        video.srcObject = stream;
-      } catch (e) {
-        alert('Nepovolený přístup ke kameře. Apka nejede bez selfie!');
-      }
-    }
-    openCamera();
+        function drawScanAnimation(startTime) {
+            const currentTime = Date.now();
+            const elapsedTime = currentTime - startTime;
+            const duration = 3000;
 
-    snapBtn.onclick = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-      const dataUrl = canvas.toDataURL('image/png');
-      photo.src = dataUrl;
-      lastImage = dataUrl;
-      document.getElementById('camera').style.display = 'none';
-      preview.style.display = '';
-    };
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    retakeBtn.onclick = () => {
-      preview.style.display = 'none';
-      document.getElementById('camera').style.display = '';
-    };
+            // --- Scanning Line ---
+            const scanY = (canvas.height / duration) * elapsedTime;
+            ctx.strokeStyle = '#2dd4bf';
+            ctx.lineWidth = 2;
+            ctx.shadowColor = '#2dd4bf';
+            ctx.shadowBlur = 20;
+            ctx.beginPath();
+            ctx.moveTo(0, scanY);
+            ctx.lineTo(canvas.width, scanY);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
 
-    analyzeBtn.onclick = () => {
-      const idx = Math.floor(Math.random() * levels.length);
-      levelEl.textContent = levels[idx].name;
-      descEl.textContent = levels[idx].desc;
-      hlaskaEl.textContent = hlasky[Math.floor(Math.random() * hlasky.length)];
-      preview.style.display = 'none';
-      result.style.display = '';
-    };
+            // --- Main Targeting Reticle ---
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = canvas.width * 0.25;
+            ctx.strokeStyle = 'rgba(45, 212, 191, 0.8)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.moveTo(centerX - radius - 10, centerY);
+            ctx.lineTo(centerX + radius + 10, centerY);
+            ctx.moveTo(centerX, centerY - radius - 10);
+            ctx.lineTo(centerX, centerY + radius + 10);
+            ctx.stroke();
 
-    againBtn.onclick = () => {
-      result.style.display = 'none';
-      document.getElementById('camera').style.display = '';
-    };
+            // --- Corner Brackets ---
+            const rectWidth = canvas.width * 0.8;
+            const rectHeight = canvas.height * 0.9;
+            const rectX = (canvas.width - rectWidth) / 2;
+            const rectY = (canvas.height - rectHeight) / 2;
+            const cornerLength = 30;
+            ctx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            // Top-left
+            ctx.moveTo(rectX, rectY + cornerLength); ctx.lineTo(rectX, rectY); ctx.lineTo(rectX + cornerLength, rectY);
+            // Top-right
+            ctx.moveTo(rectX + rectWidth - cornerLength, rectY); ctx.lineTo(rectX + rectWidth, rectY); ctx.lineTo(rectX + rectWidth, rectY + cornerLength);
+            // Bottom-left
+            ctx.moveTo(rectX, rectY + rectHeight - cornerLength); ctx.lineTo(rectX, rectY + rectHeight); ctx.lineTo(rectX + cornerLength, rectY + rectHeight);
+            // Bottom-right
+            ctx.moveTo(rectX + rectWidth - cornerLength, rectY + rectHeight); ctx.lineTo(rectX + rectWidth, rectY + rectHeight); ctx.lineTo(rectX + rectWidth, rectY + rectHeight - cornerLength);
+            ctx.stroke();
 
-    shareBtn.onclick = async () => {
-      let text = `Moje úroveň smažky: ${levelEl.textContent}\n${descEl.textContent}\n${hlaskaEl.textContent}`;
-      if (navigator.share) {
-        await navigator.share({
-          title: 'Jsem smažka',
-          text,
-          files: lastImage ? [await (await fetch(lastImage)).blob()] : undefined,
-        });
-      } else {
-        prompt('Pošli výsledek kámošovi:', text);
-      }
-    };
-  </script>
+            // --- Flickering Data Readouts ---
+            ctx.fillStyle = '#2dd4bf';
+            ctx.font = '14px "Chakra Petch"';
+            if (Math.random() > 0.1) ctx.fillText('STATUS: ANALÝZA BIOMETRIE', 10, 20);
+            if (Math.random() > 0.2) ctx.fillText(`PUPIL_DILATION: ${(Math.random() * 20 + 79).toFixed(2)}%`, 10, 40);
+            if (Math.random() > 0.3) ctx.fillText(`HEART_RATE_VAR: ${(Math.random() * 30 + 110).toFixed(1)} BPM`, 10, 60);
+            
+            ctx.textAlign = 'right';
+            if (Math.random() > 0.1) ctx.fillText('CÍL: LIDSKÝ SUBJEKT', canvas.width - 10, 20);
+            if (Math.random() > 0.2) ctx.fillText(`NEURO_SCAN: ${(Math.random() * 400 + 100).toFixed(0)} mV`, canvas.width - 10, 40);
+            
+            ctx.fillStyle = '#ef4444'; // Red for warning
+            if (Math.random() > 0.5) ctx.fillText('VAROVÁNÍ: VYSOKÉ TOXICITY', canvas.width - 10, canvas.height - 10);
+            ctx.textAlign = 'left';
+
+            if (elapsedTime < duration) {
+                animationFrameId = requestAnimationFrame(() => drawScanAnimation(startTime));
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        function analyze() {
+            resultContent.classList.add('hidden');
+            resultContent.classList.remove('fade-in');
+            resultSection.classList.remove('hidden');
+            loader.classList.remove('hidden');
+            loadingText.classList.remove('hidden');
+            analyzeButton.disabled = true;
+            analyzeButton.textContent = 'PROBÍHÁ ANALÝZA...';
+            
+            const startTime = Date.now();
+            animationFrameId = requestAnimationFrame(() => drawScanAnimation(startTime));
+
+            setTimeout(() => {
+                cancelAnimationFrame(animationFrameId);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const percentage = Math.floor(Math.random() * 91) + 10;
+                const message = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+
+                resultPercentage.textContent = `${percentage}%`;
+                resultMessage.textContent = message;
+                
+                loader.classList.add('hidden');
+                loadingText.classList.add('hidden');
+                resultContent.classList.remove('hidden');
+                resultContent.classList.add('fade-in');
+                
+                analyzeButton.disabled = false;
+                analyzeButton.textContent = 'Spustit kyber-analýzu';
+
+            }, 3000);
+        }
+
+        startButton.addEventListener('click', startCamera);
+        analyzeButton.addEventListener('click', analyze);
+    </script>
+
 </body>
 </html>
