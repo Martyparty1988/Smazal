@@ -128,10 +128,6 @@
             display: grid;
             place-items: center;
             background: transparent;
-            padding-top: var(--safe-area-top);
-            padding-bottom: var(--safe-area-bottom);
-            padding-left: var(--safe-area-left);
-            padding-right: var(--safe-area-right);
             box-sizing: border-box;
         }
         @supports (height: 100dvh) {
@@ -152,6 +148,12 @@
             transform-origin: top left;
             will-change: transform;
             overflow: hidden;
+        }
+        #content-container {
+            padding-top: calc(3rem + var(--safe-area-top));
+            padding-bottom: calc(2rem + var(--safe-area-bottom));
+            padding-left: calc(1rem + var(--safe-area-left));
+            padding-right: calc(1rem + var(--safe-area-right));
         }
         #fit-inner::before {
             content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -208,7 +210,7 @@
 <body>
     <div id="fit-stage">
         <div id="fit-inner">
-            <div class="max-w-md mx-auto flex flex-col space-y-6 p-4 pt-12 pb-8 h-full">
+            <div id="content-container" class="max-w-md mx-auto flex flex-col space-y-6 h-full">
                 
                 <h1 class="font-orbitron text-3xl text-center text-cyan-300">Najdi smažák</h1>
 
