@@ -105,35 +105,45 @@
             --glass-bg: rgba(28, 37, 61, 0.6); --glass-border: rgba(100, 116, 139, 0.25);
             --glow-blue: rgba(0, 246, 255, 0.35); --glow-purple: rgba(168, 85, 247, 0.4);
             --glow-yellow: rgba(250, 204, 21, 0.4); --glow-red: rgba(248, 113, 113, 0.5);
-            --safe-area-top: env(safe-area-inset-top); --safe-area-bottom: env(safe-area-inset-bottom);
+            --safe-area-top: env(safe-area-inset-top);
+            --safe-area-bottom: env(safe-area-inset-bottom);
+            --safe-area-left: env(safe-area-inset-left);
+            --safe-area-right: env(safe-area-inset-right);
         }
         html, body {
             height: 100%;
             width: 100%;
+            margin: 0;
+            overflow: hidden;
         }
         body {
             font-family: 'Share Tech Mono', monospace;
             background: linear-gradient(160deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
             color: var(--text-primary);
-            overflow: hidden; /* No scroll */
-            margin: 0;
             -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
         }
         #fit-stage {
-            position: fixed;
-            top: env(safe-area-inset-top);
-            right: env(safe-area-inset-right);
-            bottom: env(safe-area-inset-bottom);
-            left: env(safe-area-inset-left);
+            width: 100%;
+            height: 100%;
             display: grid;
             place-items: center;
             background: transparent;
+            padding-top: var(--safe-area-top);
+            padding-bottom: var(--safe-area-bottom);
+            padding-left: var(--safe-area-left);
+            padding-right: var(--safe-area-right);
+            box-sizing: border-box;
         }
-        @supports (height: 100svh) {
-            #fit-stage { width: 100vw; height: 100svh; top: 0; left: 0; }
+        @supports (height: 100dvh) {
+            #fit-stage { height: 100dvh; }
         }
-        @supports not (height: 100svh) {
-            #fit-stage { width: 100vw; height: 100vh; top: 0; left: 0; }
+        @supports not (height: 100dvh) {
+            @supports (height: 100svh) {
+                #fit-stage { height: 100svh; }
+            }
+            @supports not (height: 100svh) {
+                #fit-stage { height: 100vh; }
+            }
         }
         #fit-inner {
             position: absolute;
@@ -141,7 +151,7 @@
             height: 844px;
             transform-origin: top left;
             will-change: transform;
-            overflow: hidden; /* Clip content that might overflow during animations */
+            overflow: hidden;
         }
         #fit-inner::before {
             content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -250,8 +260,8 @@
                              <button id="excuse-button" class="btn btn-ai w-full p-2 rounded-full text-xs font-orbitron font-bold text-black tracking-wider">✨ Vymysli výmluvu</button>
                              <button id="poem-button" class="btn btn-ai w-full p-2 rounded-full text-xs font-orbitron font-bold text-black tracking-wider">✨ Napiš báseň</button>
                              <button id="fortune-button" class="btn btn-ai w-full p-2 rounded-full text-xs font-orbitron font-bold text-black tracking-wider">✨ Věšti budoucnost</button>
-                             <button id="letter-button" class="btn btn-ai w-full p-2 rounded-full text-xs font-orbitron font-bold text-black tracking-wider">✨ Dopis mámě</button>
-                             <button id="confession-button" class="btn btn-ai w-full p-2 rounded-full text-xs font-orbitron font-bold text-black tracking-wider">✨ Zpověď</button>
+                             <button id="letter-button" class="btn btn-ai w-full p-2 rounded-full text-xs font-orbitron font-bold text-black tracking-wider col-span-2">✨ Napiš dopis mámě</button>
+                             <button id="confession-button" class="btn btn-ai w-full p-2 rounded-full text-xs font-orbitron font-bold text-black tracking-wider col-span-2">✨ Zpověď</button>
                         </div>
                     </div>
                 </div>
@@ -342,6 +352,33 @@
                 "Piko se vaří, nehýbej se", "Šlehni si opatrně", "Kámo, jsi bílej jak stěna"
             ];
             
+            const localPoems = [
+                "Růže jsou rudý, fialky modrý,<br>cukr je sladkej a ty jsi hotový.",
+                "Na nebi hvězdy, v žíle máš lajnu,<br>svět se ti točí, zapomeň na vinu.",
+                "{subjectName} kouká, oči jak z praku,<br>čeká na další dávku v absťáku.",
+                "Tep ti buší, mozek máš v mlze,<br>dneska to skončí v policejní fréze."
+            ];
+
+            const localFortunes = [
+                "Vidím tmu. A pak ještě větší tmu. Jo a taky ti dojdou prachy.",
+                "Tvoje budoucnost je jasná jako bahno. Zítra prodáš i boty.",
+                "Hvězdy říkají, že najdeš pětikorunu. A hned ji prohraješ v automatech.",
+                "Čeká tě nečekané setkání. S podlahou, až sebou sekneš."
+            ];
+
+            const localLetters = [
+                "Ahoj mami, všechno je v pohodě. Našel jsem si brigádu jako ochutnávač chemikálií a moc mě to baví. Posílám pusu, tvůj {subjectName}.",
+                "Drahá maminko, daří se mi skvěle. Bydlím v komunitě podobně smýšlejících lidí pod mostem a sdílíme úplně všechno. Hlavně jehly. S láskou, {subjectName}.",
+                "Mami, jen ti chci říct, že ten svetr, co jsi mi pletla, jsem vyměnil za půl gramu. Byla to dobrá investice. Tvůj milující {subjectName}."
+            ];
+
+            const localConfessions = [
+                "Jednou jsem si šlehnul redbull. Nic to se mnou neudělalo.",
+                "Myslím, že jsem včera prodal svoje ledviny. Ale nejsem si jistej, mám okno.",
+                "Ukradl jsem holubovi rohlík. A pak jsem mu ho ze soucitu vrátil. Půlku.",
+                "Tajně poslouchám Depeche Mode, když si myslím, že se nikdo nedívá."
+            ];
+
             let lastUsedLog = '';
 
             const random = (min, max) => Math.random() * (max - min) + min;
