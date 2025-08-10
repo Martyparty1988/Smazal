@@ -2,645 +2,485 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Najdi smažák</title>
-    
-    <!-- PWA Icon and Manifest Generator -->
-    <script>
-        (function() {
-            function drawIcon(size) {
-                const canvas = document.createElement('canvas');
-                canvas.width = size;
-                canvas.height = size;
-                const ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#0a192f';
-                ctx.fillRect(0, 0, size, size);
-                ctx.save();
-                ctx.translate(size / 2, size / 2);
-                ctx.rotate(-45 * Math.PI / 180);
-                const scale = size / 512;
-                const bodyWidth = 60 * scale;
-                const bodyHeight = 250 * scale;
-                const bodyX = -bodyWidth / 2;
-                const bodyY = -bodyHeight / 2;
-                ctx.fillStyle = '#e2e8f0';
-                ctx.strokeStyle = '#4a5568';
-                ctx.lineWidth = 8 * scale;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.beginPath();
-                ctx.roundRect(bodyX, bodyY, bodyWidth, bodyHeight, 15 * scale);
-                ctx.stroke();
-                ctx.fill();
-                const liquidGradient = ctx.createLinearGradient(bodyX, bodyY, bodyX, bodyY + bodyHeight);
-                liquidGradient.addColorStop(0, '#00f6ff');
-                liquidGradient.addColorStop(1, '#00b8d4');
-                ctx.fillStyle = liquidGradient;
-                ctx.beginPath();
-                ctx.roundRect(bodyX + 5 * scale, bodyY + 100 * scale, bodyWidth - 10 * scale, bodyHeight - 105 * scale, 10 * scale);
-                ctx.fill();
-                const plungerY = bodyY - 100 * scale;
-                ctx.fillStyle = '#718096';
-                ctx.strokeStyle = '#2d3748';
-                ctx.lineWidth = 4 * scale;
-                ctx.beginPath();
-                ctx.roundRect(bodyX - 20 * scale, plungerY - 30 * scale, bodyWidth + 40 * scale, 30 * scale, 10 * scale);
-                ctx.fill();
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.fillRect(bodyX + (bodyWidth / 2) - 5 * scale, plungerY, 10 * scale, 100 * scale);
-                const needleBaseY = bodyY + bodyHeight;
-                ctx.fillStyle = '#c0c0c0';
-                ctx.strokeStyle = '#718096';
-                ctx.lineWidth = 2 * scale;
-                ctx.beginPath();
-                ctx.fillRect(bodyX + 10 * scale, needleBaseY, bodyWidth - 20 * scale, 20 * scale);
-                ctx.beginPath();
-                ctx.moveTo(0, needleBaseY + 20 * scale);
-                ctx.lineTo(0, needleBaseY + 140 * scale);
-                ctx.strokeStyle = '#c0c0c0';
-                ctx.lineWidth = 6 * scale;
-                ctx.stroke();
-                ctx.restore();
-                return canvas.toDataURL('image/png');
-            }
-            const icon192 = drawIcon(192);
-            const icon512 = drawIcon(512);
-            const favicon = drawIcon(32);
-            const themeColor = '#0a192f';
-            const manifest = {
-                name: "Najdi smažák",
-                short_name: "Smažák",
-                start_url: ".",
-                display: "standalone",
-                background_color: themeColor,
-                theme_color: themeColor,
-                icons: [
-                    { src: icon192, type: "image/png", sizes: "192x192" },
-                    { src: icon512, type: "image/png", sizes: "512x512" }
-                ]
-            };
-            const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-            const manifestURL = URL.createObjectURL(blob);
-            document.head.insertAdjacentHTML('beforeend', `
-                <link rel="icon" href="${favicon}">
-                <link rel="apple-touch-icon" href="${icon192}">
-                <link rel="manifest" href="${manifestURL}">
-                <meta name="theme-color" content="${themeColor}">
-                <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-            `);
-        })();
-    </script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jsem Smažka - Pokročilá Kyber-analýza</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Face-api.js for face detection -->
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-gradient-start: #0a192f; --bg-gradient-mid: #0d4e5a; --bg-gradient-end: #4a0e4e;
-            --accent-blue: #00f6ff; --accent-purple: #a855f7; --accent-yellow: #facc15;
-            --accent-orange: #fb923c; --accent-red: #f87171; --accent-green: #4ade80;
-            --text-primary: #e2e8f0; --text-secondary: #94a3b8;
-            --glass-bg: rgba(28, 37, 61, 0.6); --glass-border: rgba(100, 116, 139, 0.25);
-            --glow-blue: rgba(0, 246, 255, 0.35); --glow-purple: rgba(168, 85, 247, 0.4);
-            --glow-yellow: rgba(250, 204, 21, 0.4); --glow-red: rgba(248, 113, 113, 0.5);
-            --safe-area-top: env(safe-area-inset-top);
-            --safe-area-bottom: env(safe-area-inset-bottom);
-            --safe-area-left: env(safe-area-inset-left);
-            --safe-area-right: env(safe-area-inset-right);
+            --bg-gradient: linear-gradient(-45deg, #0f0c29, #1c1a3a, #0d1a3a, #0f0c29);
+            --text-color: #ffffff;
+            --text-muted-color: #9ca3af;
+            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-border: rgba(45, 212, 191, 0.2);
+            --primary-glow: #2dd4bf;
+            --secondary-glow: #38bdf8;
         }
-        html, body {
-            height: 100%;
-            width: 100%;
-            margin: 0;
-            overflow: hidden;
+
+        [data-theme="light"] {
+            --bg-gradient: linear-gradient(-45deg, #e0e7ff, #c7d2fe, #e0f2fe, #e0e7ff);
+            --text-color: #111827;
+            --text-muted-color: #4b5563;
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(56, 189, 248, 0.4);
+            --primary-glow: #0d9488;
+            --secondary-glow: #0284c7;
         }
+
         body {
-            font-family: 'Share Tech Mono', monospace;
-            background: linear-gradient(160deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
-            color: var(--text-primary);
-            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+            font-family: 'Inter', sans-serif;
+            touch-action: manipulation;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease infinite;
+            transition: background 0.5s, color 0.5s;
         }
-        #fit-stage {
-            width: 100%;
-            height: 100%;
-            display: grid;
-            place-items: center;
-            background: transparent;
-            box-sizing: border-box;
+        h1 { font-family: 'Chakra Petch', sans-serif; }
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-        @supports (height: 100dvh) {
-            #fit-stage { height: 100dvh; }
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            transition: background 0.5s, border 0.5s;
         }
-        @supports not (height: 100dvh) {
-            @supports (height: 100svh) {
-                #fit-stage { height: 100svh; }
-            }
-            @supports not (height: 100svh) {
-                #fit-stage { height: 100vh; }
-            }
+        .neon-glow {
+            text-shadow: 0 0 4px var(--text-color), 0 0 8px var(--primary-glow), 0 0 12px var(--primary-glow), 0 0 16px var(--primary-glow);
         }
-        #fit-inner {
-            position: absolute;
-            width: 390px;
-            height: 844px;
-            transform-origin: top left;
-            will-change: transform;
-            overflow: hidden;
+        .text-gradient {
+            background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; text-fill-color: transparent;
         }
-        #content-container {
-            padding-top: calc(3rem + var(--safe-area-top));
-            padding-bottom: calc(2rem + var(--safe-area-bottom));
-            padding-left: calc(1rem + var(--safe-area-left));
-            padding-right: calc(1rem + var(--safe-area-right));
+        .loader {
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top: 4px solid var(--primary-glow);
+            border-radius: 50%; width: 50px; height: 50px;
+            animation: spin 1s linear infinite;
         }
-        #fit-inner::before {
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><rect fill="%230a192f" width="800" height="800"/><g fill-opacity="0.1"><circle fill="%230d4e5a" cx="400" cy="400" r="600"/><circle fill="%231d3b5f" cx="400" cy="400" r="500"/><circle fill="%230a192f" cx="400" cy="400" r="300"/><circle fill="%231d3b5f" cx="400" cy="400" r="200"/><circle fill="%234a0e4e" cx="400" cy="400" r="100"/></g></svg>');
-            opacity: 0.05; pointer-events: none; z-index: -1;
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        #scan-canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; will-change: transform, opacity;
         }
-        h1, h2, h3, .font-orbitron { font-family: 'Orbitron', sans-serif; text-shadow: 0 0 8px var(--glow-blue); }
-        .glass-panel {
-            background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border); border-radius: 24px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-        }
-        .scanner-pulse {
-            position: absolute; border-radius: 50%; border: 1px solid var(--accent-blue);
-            animation: pulse 4s infinite cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 25px 5px var(--glow-blue), inset 0 0 20px 3px var(--glow-blue);
-        }
-        .scanner-pulse:nth-child(2) { animation-delay: 1.33s; }
-        .scanner-pulse:nth-child(3) { animation-delay: 2.66s; }
-        .animate-pulse-fast .scanner-pulse { animation-duration: 1.5s; }
-        @keyframes pulse { 0% { transform: scale(0.1); opacity: 0; } 70% { opacity: 0.5; } 100% { transform: scale(1); opacity: 0; } }
-        .blip {
-            position: absolute; border-radius: 50%; background-color: var(--accent-blue);
-            box-shadow: 0 0 12px 3px var(--glow-blue); animation: fade-in-out 3.5s infinite alternate ease-in-out; opacity: 0;
-        }
-        @keyframes fade-in-out { 0%, 100% { opacity: 0; transform: scale(0.4); } 50% { opacity: 0.8; transform: scale(1); } }
-        .btn { transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease; }
-        .btn:hover:not(:disabled) { transform: translateY(-2px); }
-        .btn:active:not(:disabled) { transform: scale(0.98); }
-        .btn:disabled { cursor: not-allowed; filter: grayscale(80%); opacity: 0.7; }
-        .btn-scan { background: linear-gradient(45deg, var(--accent-blue), var(--accent-purple)); box-shadow: 0 0 25px 5px var(--glow-blue); }
-        .btn-scan:hover:not(:disabled) { box-shadow: 0 0 35px 8px var(--glow-purple); }
-        .btn-scan:active:not(:disabled) { box-shadow: 0 0 20px 2px var(--glow-purple); }
-        .btn-ai { background: linear-gradient(45deg, var(--accent-yellow), var(--accent-orange)); box-shadow: 0 0 20px 4px var(--glow-yellow); }
-        .btn-ai:hover:not(:disabled) { box-shadow: 0 0 30px 7px var(--glow-yellow); }
-        .btn-profile { background: linear-gradient(45deg, var(--accent-blue), #38bdf8); box-shadow: 0 0 20px 4px var(--glow-blue); }
-        .btn-profile:hover:not(:disabled) { box-shadow: 0 0 30px 7px var(--glow-blue); }
-        .threat-pill { transition: all 0.5s ease; }
-        .threat-low { background-color: var(--accent-green); box-shadow: 0 0 12px var(--accent-green); }
-        .threat-medium { background-color: var(--accent-yellow); box-shadow: 0 0 12px var(--accent-yellow); }
-        .threat-high { background-color: var(--accent-orange); box-shadow: 0 0 12px var(--accent-orange); }
-        .threat-critical { background-color: var(--accent-red); box-shadow: 0 0 15px var(--glow-red); }
-        .ai-modal-loader {
-            width: 50px; height: 50px; border: 4px solid var(--glass-border);
-            border-top-color: var(--accent-blue); border-radius: 50%; animation: spin 1s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .flash-red { animation: red-flash 0.5s ease-out; }
-        @keyframes red-flash { 0%, 100% { box-shadow: none; } 50% { box-shadow: inset 0 0 100px 50px rgba(248, 113, 113, 0.6); } }
-        @media (prefers-reduced-motion: reduce) {
-          .scanner-pulse, .blip, .btn, .threat-pill, .flash-red, .ai-modal-loader { animation: none !important; transition-duration: 0.01ms !important; }
-        }
+        /* Theme toggle styles */
+        .theme-switch-wrapper { display: flex; align-items: center; }
+        .theme-switch { display: inline-block; height: 26px; position: relative; width: 50px; }
+        .theme-switch input { display:none; }
+        .slider { background-color: #4b5563; bottom: 0; cursor: pointer; left: 0; position: absolute; right: 0; top: 0; transition: .4s; border-radius: 26px; }
+        .slider:before { background-color: #fff; bottom: 4px; content: ""; height: 18px; left: 4px; position: absolute; transition: .4s; width: 18px; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary-glow); }
+        input:checked + .slider:before { transform: translateX(24px); }
     </style>
 </head>
-<body>
-    <div id="fit-stage">
-        <div id="fit-inner">
-            <div id="content-container" class="max-w-md mx-auto flex flex-col space-y-6 h-full">
-                
-                <h1 class="font-orbitron text-3xl text-center text-cyan-300">Najdi smažák</h1>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
 
-                <header class="flex justify-between items-center px-2 z-10">
-                    <div id="threat-level-pill" class="threat-pill threat-low text-black font-bold text-xs md:text-sm py-1.5 px-4 rounded-full font-orbitron text-center">Na pohodu, jen trošku sjetý</div>
-                </header>
+    <div class="w-full max-w-md mx-auto glass-card rounded-2xl shadow-2xl p-6 text-center">
+        
+        <div class="absolute top-4 right-4 theme-switch-wrapper">
+            <label class="theme-switch" for="theme-toggle" aria-label="Přepnout tmavý/světlý režim">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
 
-                <div class="relative w-full aspect-square flex items-center justify-center my-4">
-                    <div id="scanner-visual" class="absolute w-full h-full rounded-full">
-                        <div id="scanner-container" class="absolute w-full h-full">
-                            <div class="scanner-pulse w-full h-full"></div>
-                            <div class="scanner-pulse w-full h-full"></div>
-                            <div class="scanner-pulse w-full h-full"></div>
-                        </div>
-                    </div>
-                    <div class="font-orbitron text-center z-10">
-                        <div id="scanner-status" class="text-3xl font-bold text-cyan-300 transition-all" style="text-shadow: 0 0 15px var(--glow-blue);">HOTOVEJ NA ŠLEH</div>
-                        <div id="scanner-subtext" class="text-sm text-slate-400 transition-all">Čekám na lajnu</div>
-                    </div>
+        <h1 class="text-5xl font-bold text-gradient mb-2">Jsem Smažka</h1>
+        <p class="mb-6 text-muted-color">Kybernetická analýza existenciální krize.</p>
+
+        <div id="camera-container" class="relative w-full aspect-video bg-black/30 rounded-xl mb-6 overflow-hidden border border-white/20">
+            <video id="video" class="w-full h-full object-cover" autoplay playsinline muted></video>
+            <canvas id="scan-canvas"></canvas>
+            <div id="permission-prompt" class="absolute inset-0 flex flex-col items-center justify-center p-4 bg-black/50">
+                <div id="model-loader" class="hidden mb-4">
+                    <div class="loader mx-auto"></div>
+                    <p class="mt-2 text-sm">Načítám AI modely...</p>
                 </div>
-
-                <button id="scan-button" class="btn btn-scan w-full p-4 rounded-full text-xl font-orbitron font-bold text-black tracking-wider" aria-label="Najdi nejbližšího smážu">Najdi nejbližšího smážu</button>
-
-                <div class="glass-panel p-5">
-                    <div class="flex justify-between items-center mb-4 gap-2">
-                        <button id="profile-button" class="btn btn-profile w-full px-3 py-1 rounded-full text-xs font-orbitron font-bold text-black">Kdo je ten smažka?</button>
-                        <button id="cocktail-button" class="btn btn-ai w-full px-3 py-1 rounded-full text-xs font-orbitron font-bold text-black">✨ Namíchej koktejl</button>
-                    </div>
-                    <div class="flex items-center space-x-4 mb-4">
-                        <div class="w-20 h-20 rounded-full border-2 border-cyan-400 shadow-lg flex-shrink-0" style="box-shadow: 0 0 15px var(--glow-blue);">
-                            <svg id="subject-avatar" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="50" cy="50" r="48" stroke="var(--accent-blue)" stroke-width="2"/><path d="M50 30C58.2843 30 65 36.7157 65 45C65 53.2843 58.2843 60 50 60C41.7157 60 35 53.2843 35 45C35 36.7157 41.7157 30 50 30Z" stroke="var(--accent-blue)" stroke-width="2"/><path d="M25 85C25 73.9543 36.1929 65 50 65C63.8071 65 75 73.9543 75 85" stroke="var(--accent-blue)" stroke-width="2" stroke-linecap="round"/>
-                                <text id="subject-avatar-text" x="50" y="52" font-family="Orbitron, sans-serif" font-size="20" fill="var(--accent-blue)" text-anchor="middle" dominant-baseline="middle">ŠLEHAŘ</text>
-                            </svg>
-                        </div>
-                        <div class="flex-1">
-                            <div id="subject-name" class="font-bold text-xl">Šlehař Delta-Piko</div>
-                            <div id="target-status" class="text-sm text-slate-400">Stav: Relativně v klidu</div>
-                            <div id="target-threat-pill" class="mt-2 threat-pill threat-low text-black text-xs font-bold py-1 px-3 rounded-full inline-block text-center">Na pohodu, jen trošku sjetý</div>
-                        </div>
-                    </div>
-                    <div class="space-y-2">
-                        <div class="grid grid-cols-2 gap-2 text-center text-xs">
-                            <div class="glass-panel p-2 rounded-lg"><div id="stat-bpm" class="font-bold text-base text-yellow-400">82</div><div>TEPÍK</div></div>
-                            <div class="glass-panel p-2 rounded-lg"><div id="stat-risk" class="font-bold text-base text-yellow-400">18%</div><div class="leading-tight">ŠANCE ŽE RUPNE ŽÍLA</div></div>
-                        </div>
-                        <div id="ai-actions" class="grid grid-cols-2 gap-2 mt-2 hidden">
-                             <button id="ai-analysis-button" class="btn btn-ai w-full p-2 rounded-full text-xs font-orbitron font-bold text-black tracking-wider">✨ Poradna</button>
-                             <button id="excuse-button" class="btn btn-ai w-full p-2 rounded-full text-xs font-orbitron font-bold text-black tracking-wider">✨ Vymysli výmluvu</button>
-                             <button id="poem-button" class="btn btn-ai w-full p-2 rounded-full text-xs font-orbitron font-bold text-black tracking-wider">✨ Napiš báseň</button>
-                             <button id="fortune-button" class="btn btn-ai w-full p-2 rounded-full text-xs font-orbitron font-bold text-black tracking-wider">✨ Věšti budoucnost</button>
-                             <button id="letter-button" class="btn btn-ai w-full p-2 rounded-full text-xs font-orbitron font-bold text-black tracking-wider col-span-2">✨ Napiš dopis mámě</button>
-                             <button id="confession-button" class="btn btn-ai w-full p-2 rounded-full text-xs font-orbitron font-bold text-black tracking-wider col-span-2">✨ Zpověď</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass-panel p-5 flex-1">
-                    <h3 class="font-orbitron text-lg mb-4">ZÁPISKY ZE DNA</h3>
-                    <ul id="activity-log" class="space-y-3 text-sm h-full overflow-y-auto pr-2"></ul>
-                </div>
+                <p id="prompt-text" class="mb-4 font-semibold">Povol kameru a odhal pravdu.</p>
+                <button id="start-camera" class="bg-teal-400 hover:bg-teal-500 text-gray-900 font-bold py-2 px-5 rounded-lg transition-transform transform hover:scale-105">
+                    Spustit kameru
+                </button>
             </div>
+            <button id="switch-camera" aria-label="Přepnout kameru" class="hidden absolute bottom-2 right-2 bg-black/50 p-2 rounded-full hover:bg-black/75">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2.5a2.5 2.5 0 0 0-5 0V5a2.5 2.5 0 0 0 5 0V2.5z"/><path d="M12 5v1"/><path d="M18 7.5a6 6 0 0 0-12 0v3a6 6 0 0 0 6 6h0a6 6 0 0 0 6-6v-3z"/><path d="M12 16.5V20l-2 1.5M12 20l2 1.5"/></svg>
+            </button>
+        </div>
 
-            <div id="ai-modal" class="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden opacity-0" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-                <div class="glass-panel w-full max-w-lg p-6 relative">
-                    <button id="modal-close-button" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors" aria-label="Zavřít okno">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
-                    </button>
-                    <h3 id="modal-title" class="font-orbitron text-xl mb-4 text-cyan-300"></h3>
-                    <div id="modal-content" class="text-slate-300 leading-relaxed max-h-[60vh] overflow-y-auto"></div>
-                    <div id="modal-loader" class="w-full flex justify-center items-center py-8 hidden"><div class="ai-modal-loader"></div></div>
-                </div>
+        <button id="analyze-button" class="w-full bg-gradient-to-r from-teal-400 to-blue-500 text-gray-900 font-bold text-lg py-3 px-6 rounded-xl hover:opacity-90 transition-all duration-300 transform hover:scale-105 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed disabled:transform-none disabled:opacity-50" disabled>
+            Spustit kyber-analýzu
+        </button>
+
+        <div id="result-section" aria-live="polite" class="mt-8 hidden">
+            <div id="loader" class="loader mx-auto mb-4"></div>
+            <p id="loading-text" class="text-lg animate-pulse text-muted-color">Kalibrace senzorů... Skenuji biometrii...</p>
+            
+            <div id="result-content" class="hidden">
+                <h2 class="text-2xl font-semibold text-gradient mb-2">Verdikt:</h2>
+                <p id="result-percentage" class="text-6xl font-bold my-3 neon-glow"></p>
+                <p id="result-message" class="text-lg px-4 text-muted-color"></p>
+                <button id="share-button" class="mt-6 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Sdílet výsledek</button>
             </div>
         </div>
+        
+        <div id="share-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4">
+            <div class="bg-gray-800 p-6 rounded-lg text-center max-w-sm w-full">
+                <h3 class="text-xl font-bold mb-4">Váš výsledek je připraven!</h3>
+                <canvas id="share-canvas" class="w-full rounded-lg"></canvas>
+                <a id="download-link" class="mt-4 inline-block bg-green-500 text-white font-bold py-2 px-6 rounded-lg" download="jsem_smazka_vysledek.png">Stáhnout</a>
+                <button id="close-modal" class="mt-4 text-gray-400">Zavřít</button>
+            </div>
+        </div>
+
     </div>
+    
+    <footer class="mt-8 text-center text-sm text-muted-color">
+        <p>&copy; 2024 Corporation 'Na plech'.</p>
+        <p class="mt-1">Tohle není lékařská rada. Pokud vidíš draky, je to tvůj problém.</p>
+    </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const elements = {
-                scannerVisual: document.getElementById('scanner-visual'),
-                scannerContainer: document.getElementById('scanner-container'),
-                threatPill: document.getElementById('threat-level-pill'),
-                scanButton: document.getElementById('scan-button'),
-                scannerStatus: document.getElementById('scanner-status'),
-                scannerSubtext: document.getElementById('scanner-subtext'),
-                activityLog: document.getElementById('activity-log'),
-                statBpm: document.getElementById('stat-bpm'),
-                statRisk: document.getElementById('stat-risk'),
-                aiActions: document.getElementById('ai-actions'),
-                aiAnalysisButton: document.getElementById('ai-analysis-button'),
-                excuseButton: document.getElementById('excuse-button'),
-                poemButton: document.getElementById('poem-button'),
-                fortuneButton: document.getElementById('fortune-button'),
-                letterButton: document.getElementById('letter-button'),
-                confessionButton: document.getElementById('confession-button'),
-                profileButton: document.getElementById('profile-button'),
-                cocktailButton: document.getElementById('cocktail-button'),
-                aiModal: document.getElementById('ai-modal'),
-                modalTitle: document.getElementById('modal-title'),
-                modalContent: document.getElementById('modal-content'),
-                modalLoader: document.getElementById('modal-loader'),
-                modalCloseButton: document.getElementById('modal-close-button'),
-                targetThreatPill: document.getElementById('target-threat-pill'),
-                subjectName: document.getElementById('subject-name'),
-                subjectAvatarText: document.getElementById('subject-avatar-text'),
-            };
+        // --- DOM Elements ---
+        const video = document.getElementById('video');
+        const analyzeButton = document.getElementById('analyze-button');
+        const permissionPrompt = document.getElementById('permission-prompt');
+        const resultSection = document.getElementById('result-section');
+        const loader = document.getElementById('loader');
+        const loadingText = document.getElementById('loading-text');
+        const resultContent = document.getElementById('result-content');
+        const resultPercentage = document.getElementById('result-percentage');
+        const resultMessage = document.getElementById('result-message');
+        const switchCameraButton = document.getElementById('switch-camera');
+        const startButton = document.getElementById('start-camera');
+        const modelLoader = document.getElementById('model-loader');
+        const promptText = document.getElementById('prompt-text');
+        const themeToggle = document.getElementById('theme-toggle');
+        const shareButton = document.getElementById('share-button');
+        const shareModal = document.getElementById('share-modal');
+        const shareCanvas = document.getElementById('share-canvas');
+        const downloadLink = document.getElementById('download-link');
+        const closeModal = document.getElementById('close-modal');
+        
+        const canvas = document.getElementById('scan-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // --- State Variables ---
+        let currentStream;
+        let facingMode = 'user';
+        let animationFrameId;
+        let particles = [];
+        let lastResult = {};
+        let audioContext;
 
-            let isProcessing = false;
-            let currentThreatIndex = 0;
-            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            
-            const subjects = [
-                { name: 'Šlehař Delta-Piko', avatar: 'ŠLEHAŘ' },
-                { name: 'Hulič Zubatá Žárovka', avatar: 'HULIČ' },
-                { name: 'Sajrajtový Špiritus X', avatar: 'SAJRAJT' },
-                { name: 'Pervitínový Fantom', avatar: 'FANTOM' },
-                { name: 'Metloš Level-7', avatar: 'METLOŠ' },
-                { name: 'Čichač Trubek Omega', avatar: 'ČICHAČ' },
-                { name: 'Vařič Ketaminu z Kolbenky', avatar: 'VAŘIČ' },
-                { name: 'Šňupač Okenního Tmelu', avatar: 'ŠŇUPAČ' }
-            ];
+        // --- Hlášky ---
+        const funnyMessages = {
+            mild: [
+                "Jsi v klidu, kámo. Můžeš si dát ještě jednoho.",
+                "Oči jako angorák, ale mozek ještě funguje.",
+                "Jsi tak akorát. Ideální stav pro sledování dokumentů o zvířatech.",
+            ],
+            medium: [
+                "Vesmír ti leží u nohou. Nebo jsi jenom mimo?",
+                "Tvoje třetí oko je plně otevřené.",
+                "Vypadáš, že bys teď vyřešil záhady vesmíru.",
+                "Sleduješ mouchu na zdi už 5 minut. A fandíš jí.",
+                "Realita ti právě dala facku, ale tys to necítil.",
+            ],
+            extreme: [
+                "Tvoje zorničky jsou tak velký, že by tě nepustili ani do Studia 54 v jeho nejlepších letech.",
+                "Vypadáš, že jsi právě předjel kamion plnej jehel. V odstavným pruhu.",
+                "Stav: 'Perníkový táta'. Jenom bez toho vaření.",
+                "Analýza ukazuje stopy... všeho. Absolutně všeho.",
+                "Volali ze Studia 54, že prej už máš doživotní zákaz.",
+                "Jsi tak mimo, že by tě ani Google Maps nenašly.",
+                "Gratuluji, překročil jsi horizont událostí. Zpáteční lístek neexistuje.",
+                "Tvoje DNA volá o pomoc. Latinsky.",
+                "I Schrödingerova kočka ví, že jsi úplně mimo.",
+                "Stav: Komunikuješ s nábytkem pomocí telepatie."
+            ]
+        };
 
-            const threatLevels = [
-                { name: 'Na pohodu, jen trošku sjetý', class: 'threat-low', level: 0 },
-                { name: 'Půl dávky v žíle', class: 'threat-medium', level: 1 },
-                { name: 'Na šrot', class: 'threat-high', level: 2 },
-                { name: 'Totál Overdose', class: 'threat-critical', level: 3 }
-            ];
+        // --- Audio ---
+        function playSound(type) {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
 
-            const logPhrases = [
-                "Vařím dávku, drž se", "Šlehám vrstvičku I", "Šlehám vrstvičku II", "Míchám s acetonem… hotovo",
-                "Přepaluju trubky", "Dealer hlásí, že zboží jede", "Fízlové se motaj poblíž", "Krevák ti letí, tepík: {BPM}",
-                "Piko čistota 78 %, dobrý", "Piko čistota 23 %, bída", "Riziko prasknutí žíly: {RISK}%", "Schovej se, jede měšťák",
-                "Šňupu data z radaru", "Balím dávku do igeliťáku", "Načítám nové lajny…", "Tep ti lítá jak kolotoč",
-                "Čekám na dodávku z Polska", "Zapalovač ready", "Sjetý, ale pod kontrolou", "Kámo, máš roztažený zorničky",
-                "Tvůj tepík: {BPM}, to je cajk", "Tvůj tepík: {BPM}, už jsi přestřelil", "Prasklo tělo na šrot",
-                "Dealer offline, improvizuj", "Vařím ketu v garáži", "Bacha, perník se přepaluje", "Někdo ťuká na dveře",
-                "Vysyp prášek na zrcadlo", "Připravuju stříkačku", "Na půl mozku v pohodě", "Někdo šlohnul lžičku",
-                "Matroš ready, šňupej", "Schovej se do skříně", "Prásknul ses do žíly", "Prodávám matroš na rohu",
-                "Vdechni, drž, vydechni", "Vysoký tlak, kámo", "Fízlové na střeše", "Stříkačka dezinfikovaná",
-                "Piko se vaří, nehýbej se", "Šlehni si opatrně", "Kámo, jsi bílej jak stěna"
-            ];
-            
-            const localPoems = [
-                "Růže jsou rudý, fialky modrý,<br>cukr je sladkej a ty jsi hotový.",
-                "Na nebi hvězdy, v žíle máš lajnu,<br>svět se ti točí, zapomeň na vinu.",
-                "{subjectName} kouká, oči jak z praku,<br>čeká na další dávku v absťáku.",
-                "Tep ti buší, mozek máš v mlze,<br>dneska to skončí v policejní fréze."
-            ];
+            if (type === 'start') {
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 1);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 1);
+            } else if (type === 'end') {
+                oscillator.type = 'square';
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.2);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.2);
+            }
+        }
 
-            const localFortunes = [
-                "Vidím tmu. A pak ještě větší tmu. Jo a taky ti dojdou prachy.",
-                "Tvoje budoucnost je jasná jako bahno. Zítra prodáš i boty.",
-                "Hvězdy říkají, že najdeš pětikorunu. A hned ji prohraješ v automatech.",
-                "Čeká tě nečekané setkání. S podlahou, až sebou sekneš."
-            ];
+        // --- Theme ---
+        function switchTheme(e) {
+            if (e.target.checked) {
+                document.body.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }    
+        }
+        const currentTheme = localStorage.getItem('theme');
+        if (currentTheme) {
+            document.body.setAttribute('data-theme', currentTheme);
+            if (currentTheme === 'light') themeToggle.checked = true;
+        }
 
-            const localLetters = [
-                "Ahoj mami, všechno je v pohodě. Našel jsem si brigádu jako ochutnávač chemikálií a moc mě to baví. Posílám pusu, tvůj {subjectName}.",
-                "Drahá maminko, daří se mi skvěle. Bydlím v komunitě podobně smýšlejících lidí pod mostem a sdílíme úplně všechno. Hlavně jehly. S láskou, {subjectName}.",
-                "Mami, jen ti chci říct, že ten svetr, co jsi mi pletla, jsem vyměnil za půl gramu. Byla to dobrá investice. Tvůj milující {subjectName}."
-            ];
+        // --- Camera & Face-API ---
+        async function loadModels() {
+            const MODEL_URL = 'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights';
+            modelLoader.classList.remove('hidden');
+            promptText.classList.add('hidden');
+            startButton.classList.add('hidden');
+            await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+            modelLoader.classList.add('hidden');
+            promptText.classList.remove('hidden');
+            startButton.classList.remove('hidden');
+        }
 
-            const localConfessions = [
-                "Jednou jsem si šlehnul redbull. Nic to se mnou neudělalo.",
-                "Myslím, že jsem včera prodal svoje ledviny. Ale nejsem si jistej, mám okno.",
-                "Ukradl jsem holubovi rohlík. A pak jsem mu ho ze soucitu vrátil. Půlku.",
-                "Tajně poslouchám Depeche Mode, když si myslím, že se nikdo nedívá."
-            ];
+        function stopCameraStream() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+        }
 
-            let lastUsedLog = '';
-
-            const random = (min, max) => Math.random() * (max - min) + min;
-
-            function debounce(func, delay) {
-                let timeout;
-                return function(...args) {
-                    clearTimeout(timeout);
-                    timeout = setTimeout(() => func.apply(this, args), delay);
+        async function startCamera() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                promptText.textContent = "Tvůj prohlížeč nepodporuje přístup ke kameře.";
+                return;
+            }
+            stopCameraStream();
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode } });
+                currentStream = stream;
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
                 };
+                permissionPrompt.classList.add('hidden');
+                analyzeButton.disabled = false;
+                switchCameraButton.classList.remove('hidden');
+            } catch (err) {
+                console.error("Chyba kamery: ", err);
+                promptText.textContent = "Nepodařilo se získat přístup ke kameře.";
+            }
+        }
+
+        async function switchCamera() {
+            facingMode = facingMode === 'user' ? 'environment' : 'user';
+            await startCamera();
+        }
+
+        // --- Animation ---
+        function createParticles(count) {
+            particles = [];
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2 + 1,
+                    opacity: Math.random() * 0.5 + 0.2,
+                });
+            }
+        }
+
+        async function drawScanAnimation(startTime) {
+            const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
+            const face = detections[0]; // Use the first detected face
+
+            const currentTime = Date.now();
+            const elapsedTime = currentTime - startTime;
+            const duration = 3000;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Particles
+            particles.forEach(p => {
+                ctx.fillStyle = `rgba(45, 212, 191, ${p.opacity})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Scan Line
+            const scanY = (canvas.height / duration) * elapsedTime;
+            ctx.strokeStyle = '#2dd4bf';
+            ctx.lineWidth = 2;
+            ctx.shadowColor = '#2dd4bf';
+            ctx.shadowBlur = 20;
+            ctx.beginPath();
+            ctx.moveTo(0, scanY);
+            ctx.lineTo(canvas.width, scanY);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            if (face) {
+                const { x, y, width, height } = face.detection.box;
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.9)';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(x, y, width, height);
+                // Draw face landmarks
+                ctx.fillStyle = 'rgba(45, 212, 191, 0.8)';
+                face.landmarks.positions.forEach(pos => {
+                    ctx.beginPath();
+                    ctx.arc(pos.x, pos.y, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                });
             }
 
-            function getRandomLogPhrase() {
-                let availablePhrases = logPhrases.filter(p => p !== lastUsedLog);
-                let phrase = availablePhrases[Math.floor(Math.random() * availablePhrases.length)];
-                lastUsedLog = phrase;
-
-                return phrase
-                    .replace('{BPM}', elements.statBpm.textContent)
-                    .replace('{RISK}', elements.statRisk.textContent.replace('%',''));
+            if (elapsedTime < duration) {
+                animationFrameId = requestAnimationFrame(() => drawScanAnimation(startTime));
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
             }
+        }
 
-            function addLogEntry(message, level = 'info') {
-                const li = document.createElement('li');
-                li.className = 'flex items-center space-x-3 border-t border-slate-700/50 pt-3';
-                const dotColors = { info: 'bg-green-400', warn: 'bg-yellow-400', error: 'bg-orange-400', critical: 'bg-red-400', ai: 'bg-purple-400', profile: 'bg-blue-400' };
-                const dotShadows = { info: 'var(--accent-green)', warn: 'var(--accent-yellow)', error: 'var(--accent-orange)', critical: 'var(--accent-red)', ai: 'var(--glow-purple)', profile: 'var(--glow-blue)' };
-                const time = new Date().toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                li.innerHTML = `<span class="w-2 h-2 rounded-full ${dotColors[level]} flex-shrink-0" style="box-shadow: 0 0 5px ${dotShadows[level]}"></span><span class="text-slate-400">${time}</span><span class="flex-1">${message}</span>`;
-                elements.activityLog.prepend(li);
-                if (elements.activityLog.children.length > 20) { elements.activityLog.lastElementChild.remove(); }
-            }
+        // --- Main Logic ---
+        function analyze() {
+            playSound('start');
+            resultContent.classList.add('hidden');
+            resultContent.classList.remove('fade-in');
+            resultSection.classList.remove('hidden');
+            loader.classList.remove('hidden');
+            loadingText.classList.remove('hidden');
+            analyzeButton.disabled = true;
+            analyzeButton.textContent = 'PROBÍHÁ ANALÝZA...';
             
-            function addRandomLog(level = 'info') {
-                addLogEntry(getRandomLogPhrase(), level);
-            }
+            createParticles(100);
+            const startTime = Date.now();
+            animationFrameId = requestAnimationFrame(() => drawScanAnimation(startTime));
 
-            function createBlips() {
-                if (prefersReducedMotion) return;
-                const container = elements.scannerContainer;
-                const maxBlips = 12;
-                let existingBlips = container.querySelectorAll('.blip').length;
-                if (existingBlips > maxBlips) {
-                    for(let i = 0; i < existingBlips - maxBlips; i++) {
-                        if(container.querySelector('.blip')) container.querySelector('.blip').remove();
-                    }
-                }
+            setTimeout(() => {
+                playSound('end');
+                cancelAnimationFrame(animationFrameId);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                const blipCount = Math.floor(random(6, 10));
-                for (let i = 0; i < blipCount; i++) {
-                    const blip = document.createElement('div');
-                    blip.className = 'blip';
-                    const size = random(6, 14);
-                    blip.style.width = `${size}px`;
-                    blip.style.height = `${size}px`;
-                    blip.style.left = `${random(10, 90)}%`;
-                    blip.style.top = `${random(10, 90)}%`;
-                    blip.style.animationDelay = `${random(0, 3)}s`;
-                    container.appendChild(blip);
-                }
-            }
-
-            function changeSubject() {
-                const newSubject = subjects[Math.floor(Math.random() * subjects.length)];
-                elements.subjectName.textContent = newSubject.name;
-                elements.subjectAvatarText.textContent = newSubject.avatar;
-            }
-
-            function updateThreatLevel() {
-                if (isProcessing) return;
-                currentThreatIndex = (currentThreatIndex + 1) % threatLevels.length;
-                const newThreat = threatLevels[currentThreatIndex];
+                const percentage = Math.floor(Math.random() * 91) + 10;
+                let category;
+                if (percentage < 40) category = 'mild';
+                else if (percentage < 80) category = 'medium';
+                else category = 'extreme';
                 
-                elements.threatPill.textContent = newThreat.name;
-                elements.threatPill.className = `threat-pill text-black font-bold text-xs md:text-sm py-1.5 px-4 rounded-full font-orbitron text-center ${newThreat.class}`;
+                const messages = funnyMessages[category];
+                const message = messages[Math.floor(Math.random() * messages.length)];
                 
-                elements.targetThreatPill.textContent = newThreat.name;
-                elements.targetThreatPill.className = `mt-2 threat-pill text-black text-xs font-bold py-1 px-3 rounded-full inline-block text-center ${newThreat.class}`;
+                lastResult = { percentage, message };
+                resultPercentage.textContent = `${percentage}%`;
+                resultMessage.textContent = message;
                 
-                elements.aiActions.classList.toggle('hidden', newThreat.level < 2);
+                loader.classList.add('hidden');
+                loadingText.classList.add('hidden');
+                resultContent.classList.remove('hidden');
+                resultContent.classList.add('fade-in');
                 
-                const logLevels = ['info', 'warn', 'error', 'critical'];
-                addLogEntry(`⚠️ Hrozba: ${newThreat.name}`, logLevels[newThreat.level]);
+                analyzeButton.disabled = false;
+                analyzeButton.textContent = 'Spustit kyber-analýzu';
 
-                if (newThreat.level === 3 && !prefersReducedMotion) {
-                    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-                    elements.scannerVisual.classList.add('flash-red');
-                    setTimeout(() => elements.scannerVisual.classList.remove('flash-red'), 500);
-                }
-            }
+            }, 3000);
+        }
+        
+        // --- Sharing ---
+        function generateShareImage() {
+            const { percentage, message } = lastResult;
+            const sCtx = shareCanvas.getContext('2d');
+            const w = 500;
+            const h = 500;
+            shareCanvas.width = w;
+            shareCanvas.height = h;
 
-            function runScanSequence() {
-                if (isProcessing) return;
-                isProcessing = true;
-                elements.scanButton.disabled = true;
-                if (!prefersReducedMotion) {
-                    elements.scannerContainer.classList.add('animate-pulse-fast');
-                }
-                
-                let counter = 0;
-                const states = [
-                    { status: 'VAŘÍM DÁVKU...', subtext: 'Míchám to s toluenem...' },
-                    { status: 'PŘEPALUJU TRUBKY', subtext: 'Zapalovač skoro hoří...' },
-                    { status: 'ŠŇUPU DATA', subtext: 'Dobrý matroš...' },
-                    { status: 'HOTOVO', subtext: 'Čistota 98%, kámo!' }
-                ];
+            // Gradient background
+            const gradient = sCtx.createLinearGradient(0, 0, w, h);
+            gradient.addColorStop(0, '#0f0c29');
+            gradient.addColorStop(1, '#0d1a3a');
+            sCtx.fillStyle = gradient;
+            sCtx.fillRect(0, 0, w, h);
 
-                addRandomLog('info');
-                const scanInterval = setInterval(() => {
-                    const state = states[counter];
-                    elements.scannerStatus.textContent = state.status;
-                    elements.scannerSubtext.textContent = state.subtext;
-                    elements.statBpm.textContent = Math.floor(random(70, 160));
-                    elements.statRisk.textContent = `${Math.floor(random(10, 95))}%`;
-                    addRandomLog('info');
-                    
-                    counter++;
-                    if (counter >= states.length) {
-                        clearInterval(scanInterval);
-                        elements.scannerStatus.textContent = 'HOTOVEJ NA ŠLEH';
-                        elements.scannerSubtext.textContent = 'Čekám na další lajnu';
-                        elements.scanButton.disabled = false;
-                        isProcessing = false;
-                        if (!prefersReducedMotion) {
-                           elements.scannerContainer.classList.remove('animate-pulse-fast');
-                        }
-                        addLogEntry('Hledání dokončeno, systém ready.', 'info');
-                        changeSubject();
-                        elements.aiActions.classList.toggle('hidden', threatLevels[currentThreatIndex].level < 2);
-                    }
-                }, 1125); // 4.5s total duration
-            }
-
-            function showModal(title) {
-                elements.modalTitle.textContent = title;
-                elements.modalContent.innerHTML = '';
-                elements.modalLoader.classList.add('hidden'); 
-                elements.aiModal.classList.remove('hidden');
-                setTimeout(() => elements.aiModal.style.opacity = '1', 10);
-            }
-
-            function hideModal() {
-                elements.aiModal.style.opacity = '0';
-                setTimeout(() => elements.aiModal.classList.add('hidden'), 300);
-            }
-
-            function getThreatAnalysis() {
-                showModal('PORADNA OD DEALERŮ');
-                elements.modalContent.innerText = `Tep máš jak po trojité lajně, dej si pauzu, nebo tě klepne. Doporučení: nalej se colou a nechoď ven.`;
-                addLogEntry('Lokální poradna aktivována.', 'ai');
-            }
+            // Title
+            sCtx.font = 'bold 48px "Chakra Petch"';
+            sCtx.fillStyle = '#2dd4bf';
+            sCtx.textAlign = 'center';
+            sCtx.fillText('Jsem Smažka', w / 2, 80);
             
-            function getExcuse() {
-                showModal('NEJLEPŠÍ VÝMLUVA');
-                elements.modalContent.innerText = `Pane strážmistře, já nejsem sjetej, jenom jsem alergickej na práci a zrovna jsem prošel kolem úřadu práce. To se mi stává.`;
-                addLogEntry('Lokální generátor výmluv aktivován.', 'ai');
+            // Percentage
+            sCtx.font = 'bold 120px "Inter"';
+            sCtx.fillStyle = '#ffffff';
+            sCtx.shadowColor = '#2dd4bf';
+            sCtx.shadowBlur = 20;
+            sCtx.fillText(`${percentage}%`, w / 2, 220);
+            sCtx.shadowBlur = 0;
+
+            // Message
+            sCtx.font = '20px "Inter"';
+            sCtx.fillStyle = '#9ca3af';
+            sCtx.textAlign = 'center';
+            wrapText(sCtx, message, w / 2, 320, w - 40, 28);
+
+            // Footer
+            sCtx.font = '14px "Inter"';
+            sCtx.fillStyle = '#6b7280';
+            sCtx.fillText('Vygenerováno na smazka.web.app', w / 2, h - 30);
+
+            downloadLink.href = shareCanvas.toDataURL('image/png');
+            shareModal.classList.remove('hidden');
+        }
+
+        function wrapText(context, text, x, y, maxWidth, lineHeight) {
+            const words = text.split(' ');
+            let line = '';
+            for(let n = 0; n < words.length; n++) {
+                const testLine = line + words[n] + ' ';
+                const metrics = context.measureText(testLine);
+                const testWidth = metrics.width;
+                if (testWidth > maxWidth && n > 0) {
+                    context.fillText(line, x, y);
+                    line = words[n] + ' ';
+                    y += lineHeight;
+                } else {
+                    line = testLine;
+                }
             }
+            context.fillText(line, x, y);
+        }
 
-            function getPoem() {
-                showModal('BÁSEŇ Z KANÁLU');
-                const subjectName = elements.subjectName.textContent;
-                let poem = localPoems[Math.floor(Math.random() * localPoems.length)];
-                poem = poem.replace('{subjectName}', `<b>${subjectName}</b>`);
-                elements.modalContent.innerHTML = poem;
-                addLogEntry('Lokální básník se projevil.', 'ai');
-            }
+        // --- Event Listeners ---
+        startButton.addEventListener('click', startCamera);
+        analyzeButton.addEventListener('click', analyze);
+        switchCameraButton.addEventListener('click', switchCamera);
+        themeToggle.addEventListener('change', switchTheme);
+        shareButton.addEventListener('click', generateShareImage);
+        closeModal.addEventListener('click', () => shareModal.classList.add('hidden'));
+        window.addEventListener('beforeunload', stopCameraStream);
 
-            function getFortune() {
-                showModal('VĚŠTBA Z LÓGRU');
-                const fortune = localFortunes[Math.floor(Math.random() * localFortunes.length)];
-                elements.modalContent.innerText = fortune;
-                addLogEntry('Lokální věštba odhalena.', 'ai');
-            }
+        // --- Initialization ---
+        loadModels();
 
-            function getLetter() {
-                showModal('DOPIS MÁMĚ');
-                const subjectName = elements.subjectName.textContent;
-                let letter = localLetters[Math.floor(Math.random() * localLetters.length)];
-                letter = letter.replace('{subjectName}', `<b>${subjectName}</b>`);
-                elements.modalContent.innerHTML = letter;
-                addLogEntry('Dopis domů sepsán.', 'profile');
-            }
-            
-            function getConfession() {
-                showModal('ZPOVĚĎ');
-                const confession = localConfessions[Math.floor(Math.random() * localConfessions.length)];
-                elements.modalContent.innerText = confession;
-                addLogEntry('Hříchy odhaleny.', 'profile');
-            }
-
-            function getCocktail() {
-                showModal('RECEPT OD BARMANA');
-                elements.modalContent.innerHTML = `<b>Ingredience:</b><br>- Dešťovka z rezavýho okapu<br>- Špetka drcených projímadel<br>- Jeden vajgl<br><br><b>Postup:</b><br>1. Všechno to hoď do kelímku od jogurtu.<br>2. Pořádně protřepej a kopni to do sebe.`;
-                addLogEntry('Lokální receptář aktivován.', 'ai');
-            }
-
-            function getSubjectProfile() {
-                showModal(`KDO JE TEN SMAŽKA: ${elements.subjectName.textContent.toUpperCase()}`);
-                elements.modalContent.innerHTML = `<b>Původ:</b> Uliční varna v Žižkově.<br><br><b>Schopnosti:</b> Pozná feťáka na 200 metrů a umí sehnat cokoliv za půlku ledviny.<br><br><b>Slabiny:</b> Bez dávky nevstane z postele a bojí se holubů.`;
-                addLogEntry('Lokální profil načten.', 'profile');
-            }
-            
-            const debouncedScan = debounce(runScanSequence, 600);
-            const debouncedAnalysis = debounce(getThreatAnalysis, 600);
-            const debouncedProfile = debounce(getSubjectProfile, 600);
-            const debouncedExcuse = debounce(getExcuse, 600);
-            const debouncedCocktail = debounce(getCocktail, 600);
-            const debouncedPoem = debounce(getPoem, 600);
-            const debouncedFortune = debounce(getFortune, 600);
-            const debouncedLetter = debounce(getLetter, 600);
-            const debouncedConfession = debounce(getConfession, 600);
-
-            elements.scanButton.addEventListener('click', debouncedScan);
-            elements.aiAnalysisButton.addEventListener('click', debouncedAnalysis);
-            elements.profileButton.addEventListener('click', debouncedProfile);
-            elements.excuseButton.addEventListener('click', debouncedExcuse);
-            elements.cocktailButton.addEventListener('click', debouncedCocktail);
-            elements.poemButton.addEventListener('click', debouncedPoem);
-            elements.fortuneButton.addEventListener('click', debouncedFortune);
-            elements.letterButton.addEventListener('click', debouncedLetter);
-            elements.confessionButton.addEventListener('click', debouncedConfession);
-
-            elements.modalCloseButton.addEventListener('click', hideModal);
-            elements.aiModal.addEventListener('click', (e) => { if(e.target === elements.aiModal) hideModal(); });
-            document.addEventListener('keydown', (e) => { if (e.key === "Escape") hideModal(); });
-
-            function init() {
-                createBlips();
-                changeSubject();
-                addLogEntry('Radar nastartovanej, systém sjetej.', 'info');
-                setInterval(createBlips, 5000);
-                setInterval(updateThreatLevel, 8000);
-            }
-            init();
-        });
-    </script>
-    <script>
-        (function(){
-            const DESIGN_W = 390;
-            const DESIGN_H = 844;
-            const inner = document.getElementById('fit-inner');
-            const stage = document.getElementById('fit-stage');
-
-            function scaleToFit(){
-                const sw = stage.clientWidth;
-                const sh = stage.clientHeight;
-                const scale = Math.min(sw / DESIGN_W, sh / DESIGN_H);
-
-                inner.style.transform = `scale(${scale})`;
-                inner.style.left = `${(sw - DESIGN_W * scale) / 2}px`;
-                inner.style.top  = `${(sh - DESIGN_H * scale) / 2}px`;
-            }
-
-            window.addEventListener('load', scaleToFit);
-            window.addEventListener('resize', scaleToFit);
-            window.addEventListener('orientationchange', scaleToFit);
-            if (window.visualViewport) {
-                window.visualViewport.addEventListener('resize', scaleToFit);
-            }
-        })();
     </script>
 </body>
 </html>
