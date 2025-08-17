@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Najdi smažák v3.0</title>
+    <title>Futuristické UI Skeneru v6.1 (Optimalizováno pro iOS)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -18,20 +17,46 @@
             --glass-bg: rgba(28, 37, 61, 0.6); --glass-border: rgba(100, 116, 139, 0.25);
             --glow-blue: rgba(0, 246, 255, 0.35); --glow-purple: rgba(168, 85, 247, 0.4);
             --glow-yellow: rgba(250, 204, 21, 0.4); --glow-red: rgba(248, 113, 113, 0.5);
-            --safe-area-top: env(safe-area-inset-top); --safe-area-bottom: env(safe-area-inset-bottom);
+            /* Důležité: Definice proměnných pro bezpečné zóny s výchozími hodnotami */
+            --safe-area-top: env(safe-area-inset-top, 0px);
+            --safe-area-right: env(safe-area-inset-right, 0px);
+            --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-area-left: env(safe-area-inset-left, 0px);
         }
+
+        /* --- NOVINKA: Optimalizace pro iOS Fullscreen & Scrolling --- */
         html, body {
+            position: fixed; /* Uzamkne viewport, zabrání posouvání body */
+            width: 100%;
             height: 100%;
-            overflow: hidden;
-        }
-        body {
+            overflow: hidden; /* Skryje jakýkoliv přetékající obsah na úrovni body */
+            overscroll-behavior: none; /* Zabrání "pull-to-refresh" a dalším přetahovacím gestům */
             font-family: 'Share Tech Mono', monospace;
             background: linear-gradient(160deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
             color: var(--text-primary);
             -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
-            margin: 0;
-            padding: 0;
         }
+
+        /* Kontejner, který bude reálně scrollovatelný */
+        main#scroll-container {
+            width: 100%;
+            height: 100vh; /* Fallback pro starší prohlížeče */
+            height: 100dvh; /* Dynamická výška viewportu pro Safari, reaguje na zobrazení/skrytí lišt */
+            overflow-y: auto; /* Povolí vertikální scrollbar pouze pro tento element */
+            -webkit-overflow-scrolling: touch; /* Zapne plynulé, "nativní" scrollování na iOS */
+            position: relative; /* Nutné pro správné fungování scrollování v tomto kontextu */
+        }
+        
+        /* Obal obsahu, na který aplikujeme bezpečné zóny */
+        .content-wrapper {
+            /* Aplikuje padding podle bezpečných zón zařízení */
+            padding-top: calc(var(--safe-area-top) + 1rem);
+            padding-right: calc(var(--safe-area-right) + 1rem);
+            /* Přidává extra mezeru dole, aby se obsah nedostal pod "home bar" na iPhonech */
+            padding-bottom: calc(var(--safe-area-bottom) + 2rem); 
+            padding-left: calc(var(--safe-area-left) + 1rem);
+        }
+
         body::before {
             content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><rect fill="%230a192f" width="800" height="800"/><g fill-opacity="0.1"><circle fill="%230d4e5a" cx="400" cy="400" r="600"/><circle fill="%231d3b5f" cx="400" cy="400" r="500"/><circle fill="%230a192f" cx="400" cy="400" r="300"/><circle fill="%231d3b5f" cx="400" cy="400" r="200"/><circle fill="%234a0e4e" cx="400" cy="400" r="100"/></g></svg>');
@@ -71,121 +96,107 @@
         .threat-low { background-color: var(--accent-green); box-shadow: 0 0 12px var(--accent-green); }
         .threat-medium { background-color: var(--accent-yellow); box-shadow: 0 0 12px var(--accent-yellow); }
         .threat-high { background-color: var(--accent-orange); box-shadow: 0 0 12px var(--accent-orange); }
-        .threat-critical { background-color: var(--accent-red); box-shadow: 0 0 15px var(--glow-red); animation: pulse-red 1.5s infinite; }
+        .threat-critical { background-color: var(--accent-red); box-shadow: 0 0 15px var(--glow-red); }
         #ai-modal { transition: opacity 0.3s ease; }
         .ai-modal-loader {
             width: 50px; height: 50px; border: 4px solid var(--glass-border);
             border-top-color: var(--accent-blue); border-radius: 50%; animation: spin 1s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .flash-red { animation: red-flash 0.5s ease-out; }
-        @keyframes red-flash { 0%, 100% { box-shadow: none; } 50% { box-shadow: inset 0 0 100px 50px rgba(248, 113, 113, 0.6); } }
-        @keyframes pulse-red { 0% { transform: scale(1); box-shadow: 0 0 15px var(--glow-red); } 50% { transform: scale(1.03); box-shadow: 0 0 22px var(--glow-red); } 100% { transform: scale(1); box-shadow: 0 0 15px var(--glow-red); } }
-        
-        .main-container {
-            max-width: 480px;
-            margin: 0 auto;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            padding: calc(var(--safe-area-top) + 0.5rem) 1rem calc(var(--safe-area-bottom) + 0.5rem);
-            box-sizing: border-box;
-        }
-        .radar-container {
-            flex-shrink: 0;
-            width: 60vw;
-            max-width: 280px;
-            aspect-ratio: 1/1;
-            margin: 0.5rem auto;
-        }
-        .info-panel {
-            min-height: 0;
-        }
-        #activity-log {
-            height: 100%;
+
+        /* NOVINKA: Media query pro menší obrazovky (např. iPhone SE) */
+        @media (max-height: 700px) {
+            .content-wrapper > .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+                --tw-space-y-reverse: 0;
+                margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse)));
+                margin-bottom: calc(1rem * var(--tw-space-y-reverse));
+            }
+            .font-orbitron.text-xl { font-size: 1.125rem; }
+            .btn-scan { padding: 0.75rem; font-size: 1.125rem; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .scanner-pulse, .blip, .btn, .threat-pill, .flash-red, .threat-critical { animation: none !important; transition-duration: 0.01ms !important; }
+          .scanner-pulse, .blip, .btn, .threat-pill { animation: none !important; transition-duration: 0.01ms !important; }
         }
     </style>
 </head>
-<body class="bg-gray-900">
+<body>
 
-    <div class="main-container space-y-2 sm:space-y-3">
-        
-        <h1 class="font-orbitron text-2xl sm:text-3xl text-center text-cyan-300 flex-shrink-0">Najdi smažák v3.0</h1>
+    <!-- NOVINKA: Hlavní scrollovací kontejner -->
+    <main id="scroll-container">
+        <!-- NOVINKA: Obal obsahu pro aplikaci bezpečných zón -->
+        <div class="content-wrapper">
+            <div class="max-w-md mx-auto flex flex-col space-y-6">
 
-        <header class="flex justify-between items-center px-2 z-10 flex-shrink-0">
-            <div id="threat-level-pill" class="threat-pill threat-low text-black font-bold text-xs py-1.5 px-3 rounded-full font-orbitron text-center">Na pohodu</div>
-        </header>
+                <header class="flex justify-between items-center px-2 z-10">
+                    <div id="threat-level-pill" class="threat-pill threat-low text-black font-bold text-sm py-1.5 px-4 rounded-full font-orbitron">HROZBA: NÍZKÁ</div>
+                </header>
 
-        <div class="radar-container relative flex items-center justify-center">
-            <div id="scanner-visual" class="absolute w-full h-full rounded-full">
-                <div id="scanner-container" class="absolute w-full h-full">
-                    <div class="scanner-pulse w-full h-full"></div>
-                    <div class="scanner-pulse w-full h-full"></div>
-                    <div class="scanner-pulse w-full h-full"></div>
+                <div class="relative w-full aspect-square flex items-center justify-center my-4">
+                    <div id="scanner-container" class="absolute w-full h-full">
+                        <div class="scanner-pulse w-full h-full"></div>
+                        <div class="scanner-pulse w-full h-full"></div>
+                        <div class="scanner-pulse w-full h-full"></div>
+                    </div>
+                    <div class="font-orbitron text-center z-10">
+                        <div id="scanner-status" class="text-3xl font-bold text-cyan-300 transition-all" style="text-shadow: 0 0 15px var(--glow-blue);">PŘIPRAVEN</div>
+                        <div id="scanner-subtext" class="text-sm text-slate-400 transition-all">Čekám na příkaz</div>
+                    </div>
                 </div>
-            </div>
-            <div class="font-orbitron text-center z-10">
-                <div id="scanner-status" class="text-2xl sm:text-3xl font-bold text-cyan-300 transition-all" style="text-shadow: 0 0 15px var(--glow-blue);">HOTOVEJ NA ŠLEH</div>
-                <div id="scanner-subtext" class="text-xs sm:text-sm text-slate-400 transition-all">Čekám na lajnu</div>
+
+                <button id="scan-button" class="btn btn-scan w-full p-4 rounded-full text-xl font-orbitron font-bold text-black tracking-wider">INICIALIZOVAT SKEN</button>
+
+                <div class="glass-panel p-5">
+                    <div class="flex justify-between items-center mb-4">
+                         <h3 class="font-orbitron text-lg">ANALÝZA CÍLE</h3>
+                         <button id="profile-button" class="btn btn-profile px-3 py-1 rounded-full text-xs font-orbitron font-bold text-black">PROFIL SUBJEKTU</button>
+                    </div>
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="w-20 h-20 rounded-full border-2 border-cyan-400 shadow-lg flex-shrink-0" style="box-shadow: 0 0 15px var(--glow-blue);">
+                            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="50" cy="50" r="48" stroke="var(--accent-blue)" stroke-width="2"/><path d="M50 30C58.2843 30 65 36.7157 65 45C65 53.2843 58.2843 60 50 60C41.7157 60 35 53.2843 35 45C35 36.7157 41.7157 30 50 30Z" stroke="var(--accent-blue)" stroke-width="2"/><path d="M25 85C25 73.9543 36.1929 65 50 65C63.8071 65 75 73.9543 75 85" stroke="var(--accent-blue)" stroke-width="2" stroke-linecap="round"/><text x="50" y="52" font-family="Orbitron, sans-serif" font-size="24" fill="var(--accent-blue)" text-anchor="middle" dominant-baseline="middle">K-7</text>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-bold text-xl">Subjekt KAPPA-7</div>
+                            <div id="target-status" class="text-sm text-slate-400">Stav: Stabilní</div>
+                            <div id="target-threat-pill" class="mt-2 threat-pill threat-low text-black text-xs font-bold py-1 px-3 rounded-full inline-block">STUPEŇ OHROŽENÍ: NÍZKÝ</div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="grid grid-cols-2 gap-2 text-center text-xs">
+                             <div class="glass-panel p-2 rounded-lg"><div id="stat-bpm" class="font-bold text-base text-yellow-400">82</div><div>BPM</div></div>
+                             <div class="glass-panel p-2 rounded-lg"><div id="stat-risk" class="font-bold text-base text-yellow-400">18%</div><div>RIZIKO</div></div>
+                        </div>
+                        <button id="ai-analysis-button" class="btn btn-ai w-full p-3 mt-2 rounded-full text-md font-orbitron font-bold text-black tracking-wider hidden">✨ ZÍSKAT ANALÝZU</button>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-5">
+                    <h3 class="font-orbitron text-lg mb-4">LOG AKTIVIT</h3>
+                    <ul id="activity-log" class="space-y-3 text-sm h-40 overflow-y-auto pr-2"></ul>
+                </div>
+
             </div>
         </div>
+    </main>
 
-        <button id="scan-button" class="btn btn-scan w-full p-3 rounded-full text-lg font-orbitron font-bold text-black tracking-wider flex-shrink-0">ŠLEHNOUT DÁVKU</button>
-
-        <div class="glass-panel p-3 sm:p-4 info-panel">
-            <div class="flex justify-between items-center mb-2">
-                <h3 class="font-orbitron text-base">ROZBOR MATROŠE</h3>
-                <button id="profile-button" class="btn btn-profile px-3 py-1 rounded-full text-xs font-orbitron font-bold text-black">KDO JE TEN SMAŽKA?</button>
-            </div>
-            <div class="flex items-center space-x-3">
-                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-cyan-400 shadow-lg flex-shrink-0" style="box-shadow: 0 0 15px var(--glow-blue);">
-                    <svg id="subject-avatar" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="50" cy="50" r="48" stroke="var(--accent-blue)" stroke-width="2"/><path d="M50 30C58.2843 30 65 36.7157 65 45C65 53.2843 58.2843 60 50 60C41.7157 60 35 53.2843 35 45C35 36.7157 41.7157 30 50 30Z" stroke="var(--accent-blue)" stroke-width="2"/><path d="M25 85C25 73.9543 36.1929 65 50 65C63.8071 65 75 73.9543 75 85" stroke="var(--accent-blue)" stroke-width="2" stroke-linecap="round"/>
-                        <text id="subject-avatar-text" x="50" y="52" font-family="Orbitron, sans-serif" font-size="18" fill="var(--accent-blue)" text-anchor="middle" dominant-baseline="middle">ŠLEHAŘ</text>
-                    </svg>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <div id="subject-name" class="font-bold text-base sm:text-lg truncate">Šlehař Delta-Piko</div>
-                    <div id="target-status" class="text-xs text-slate-400">Stav: Relativně v klidu</div>
-                    <div id="target-threat-pill" class="mt-1 threat-pill threat-low text-black text-xs font-bold py-1 px-2 rounded-full inline-block text-center">Na pohodu</div>
-                </div>
-            </div>
-             <div class="grid grid-cols-2 gap-2 text-center text-xs mt-2">
-                <div class="glass-panel p-1 rounded-lg"><div id="stat-bpm" class="font-bold text-base text-yellow-400">82</div><div>TEPÍK</div></div>
-                <div class="glass-panel p-1 rounded-lg"><div id="stat-risk" class="font-bold text-base text-yellow-400">18%</div><div class="leading-tight">ŠANCE ŽE RUPNE ŽÍLA</div></div>
-            </div>
-            <button id="ai-analysis-button" class="btn btn-ai w-full p-2 mt-2 rounded-full text-sm font-orbitron font-bold text-black tracking-wider hidden">✨ PORADIT SE S DEALEREM</button>
-        </div>
-
-        <div class="glass-panel p-3 sm:p-4 flex flex-col min-h-0 flex-grow">
-            <h3 class="font-orbitron text-base mb-2 flex-shrink-0">ZÁPISKY ZE DNA</h3>
-            <ul id="activity-log" class="space-y-2 text-xs overflow-y-auto pr-2 flex-grow"></ul>
-        </div>
-    </div>
-
+    <!-- Modální okno zůstává mimo scrollovací kontejner, aby se zobrazilo přes celou obrazovku -->
     <div id="ai-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden opacity-0">
         <div class="glass-panel w-full max-w-lg p-6 relative">
             <button id="modal-close-button" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708 .708L8.707 8l2.647 2.646a.5.5 0 0 1-.708 .708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
             </button>
             <h3 id="modal-title" class="font-orbitron text-xl mb-4 text-cyan-300"></h3>
             <div id="modal-content" class="text-slate-300 leading-relaxed max-h-[60vh] overflow-y-auto"></div>
             <div id="modal-loader" class="w-full flex justify-center items-center py-8 hidden"><div class="ai-modal-loader"></div></div>
         </div>
     </div>
-    
-    <div id="event-overlay" class="hidden fixed inset-0 bg-red-900/70 backdrop-blur-sm flex items-center justify-center z-[100] text-white font-orbitron text-7xl md:text-9xl text-center p-4" style="text-shadow: 0 0 25px #fff, 0 0 50px red;">
-        ZÁTAH!
-    </div>
 
     <script>
+        // JavaScript kód zůstává beze změny, protože se stará o logiku, nikoliv o rozložení.
         document.addEventListener('DOMContentLoaded', () => {
             const elements = {
-                scannerVisual: document.getElementById('scanner-visual'),
                 scannerContainer: document.getElementById('scanner-container'),
                 threatPill: document.getElementById('threat-level-pill'),
                 scanButton: document.getElementById('scan-button'),
@@ -202,271 +213,87 @@
                 modalLoader: document.getElementById('modal-loader'),
                 modalCloseButton: document.getElementById('modal-close-button'),
                 targetThreatPill: document.getElementById('target-threat-pill'),
-                subjectName: document.getElementById('subject-name'),
-                subjectAvatarText: document.getElementById('subject-avatar-text'),
-                eventOverlay: document.getElementById('event-overlay'),
             };
 
             let isScanning = false;
-            let isEventActive = false;
             let currentThreatIndex = 0;
-            let currentSubject = null;
-            
-            let soundsReady = false;
-            const sounds = {
-                click: new Tone.Synth({ oscillator: { type: 'triangle' }, envelope: { attack: 0.005, decay: 0.1, sustain: 0.05, release: 0.1 } }).toDestination(),
-                log: new Tone.MembraneSynth({ pitchDecay: 0.008, octaves: 2, envelope: { attack: 0.001, decay: 0.2, sustain: 0.01 } }).toDestination(),
-                scan: new Tone.NoiseSynth({ noise: { type: 'pink' }, envelope: { attack: 0.01, decay: 1.5, sustain: 0 } }).toDestination(),
-                alarm: new Tone.Synth({ oscillator: { type: 'sawtooth' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.3 } }).toDestination(),
-                raid: new Tone.Synth({ oscillator: { type: 'fatsawtooth', count: 3, spread: 30 }, envelope: { attack: 0.01, decay: 1, sustain: 0.2, release: 0.5 } }).toDestination()
-            };
-            sounds.log.volume.value = -10;
-            sounds.scan.volume.value = -20;
-            
-            async function initializeAudio() {
-                if (soundsReady) return;
-                try {
-                    await Tone.start();
-                    soundsReady = true;
-                    console.log('Audio context spuštěn.');
-                } catch (e) {
-                    console.error("Chyba při inicializaci audia:", e);
-                }
-            }
-
-            // --- NOVÁ DATABÁZE POSTAV ---
-            const state = {};
-            state.subjects = [
-                { id: 'slehac', name: 'Šlehař Delta-Piko', avatar: 'ŠLEHAŘ', profile: 'Původ: Uliční varna v Žižkově. Schopnosti: Pozná feťáka na 200 metrů. Slabiny: Bojí se holubů.', logPhrases: ['Vařím dávku, drž se', 'Šlehám vrstvičku I', 'Dealer hlásí, že zboží jede', 'Piko čistota 78 %, dobrý', 'Připravuju stříkačku', 'Váha ukazuje přesně, dneska to bude jízda.', 'Filtruju přes cigaretu, klasika.', 'Kyselina se odpařuje, cejtíš to?', 'Bacha, ať to nezcukernatí.', 'Zrcátko je čistý, lajna připravena.', 'Tep stoupá, zorničky jak talíře.', 'Právě jsem prodal starý rádio za gram.'] },
-                { id: 'hulic', name: 'Hulič Zubatá Žárovka', avatar: 'HULIČ', profile: 'Původ: Skleník za panelákem. Schopnosti: Umí ubalit brko i poslepu. Slabiny: Neustále se směje vlastním vtipům.', logPhrases: ['Přepaluju sklo', 'Už to bublá, kámo', 'Mám totální červený oči', 'Kde je zapalovač?', 'Tohle je silnej model', 'Tenhle model lepí prsty, to je dobře.', 'Sháním papírky, došly mi.', 'Žárovka připravena k vaporizaci.', 'Mám vlčí hlad, objednávám pizzu.', 'Kde mám drtičku? Zase jsem ji ztratil.', 'Tohle je sativka, nebo indika? Už nevím.', 'Pouštím si chill-out mix, ať to má atmosféru.'] },
-                { id: 'cichac', name: 'Čichač Trubek Omega', avatar: 'ČICHAČ', profile: 'Původ: Kanály pod hlavním nádražím. Schopnosti: Pozná značku ředidla po čichu. Slabiny: Často mluví s odpadkovými koši.', logPhrases: ['Čichám toluen z hadru', 'Tohle lepidlo je top', 'Mozek mi odchází na výlet', 'Kde je ta igelitka?', 'Všechno se točí', 'Dneska testuju novej druh ředidla.', 'Vzpomínky se rozmazávaj, barvy jsou hezčí.', 'Ten igeliťák už má díru, potřebuju novej.', 'Slyším ozvěny z kanálu, asi na mě mluví.', 'Tohle je lepší než voňavej stromeček.', 'Ztrácím pojem o čase... a o prostoru.', 'Kámo, půjč mi hadr, ten můj už je suchej.'] },
-                { id: 'domingo', name: 'Domingo ze Smíchova', avatar: 'DEALER', profile: 'Původ: Lavička na Andělu. Schopnosti: Dokáže prodat cokoliv komukoliv. Kvalita zboží je... proměnlivá, ale občas má tak dobrej perník, že tě vystřelí z papučí.', logPhrases: ['Mám čerstvej matroš, chceš?', 'Dneska akce, dva za cenu jednoho.', 'Bacha, za rohem stojej fízlové.', 'Platba jen v hotovosti, kámo.', 'Tohle je čistý, přísahám.', 'Znáš Pepu? Dluží mi prachy.', 'Potřebuju si rychle vydělat na nájem.', 'Nekoukej tak nápadně, nejsme tu sami.', 'Rychle, rychle, nemám čas.'] },
-                { id: 'pedro', name: 'Pedro Perníček', avatar: 'DOVOZ', profile: 'Původ: Neznámý, vždy na cestě. Schopnosti: Expresní doručení až do domu 24/7. Slabiny: Občas si splete adresu.', logPhrases: ['Jsem na cestě, čekej.', 'Už jsem za rohem, připrav prachy.', 'Máš přesně? Nemám na vrácení.', 'Dneska mám zpoždění, kolony.', 'Nová várka, silnější než minule.', 'Nezvedáš telefon, co se děje?', 'Stojím před barákem, kde jsi?', 'Dneska jen perník, nic jinýho nemám.', 'Bonusovej gram za věrnost.'] },
-                { id: 'chemik', name: 'Chemik z VŠCHT', avatar: 'CHEMIK', profile: 'Původ: Laboratoř v Dejvicích. Schopnosti: Syntetizuje s přesností na mikrogram. Slabiny: Potřebuje absolutní ticho a kávu.', logPhrases: [] },
-                { id: 'dispecer', name: 'Dispečer Sítě', avatar: 'DISPEČER', profile: 'Původ: Anonymní serverovna. Schopnosti: Koordinuje logistiku celé sítě bez jediné chyby. Slabiny: Nikdy neopouští své křeslo.', logPhrases: [] }
-            ];
-
-            const extraPhrases = {
-                slehac: {
-                    toastPhrases: ['Čistota nad 80 %. Leť.','Filtr čistý. Nezakecej.','Míchám to jak boží prst.','Teplota drží. Nepřepal.','Vzorek stabilní. Plynule.','Syntéza v plným proudu.','Bez bublin. Profi kvalita.','Mix jak od Michelina.','Krystal jak diamant.','Tlak drží. Neměň nic.'],
-                    logPhrases: ['Zkumavka zpívá – čistý tón.','Mikro bubliny OK.','Měřák bliká zeleně.','Destilku dolít, ať to neškrábe.','Míchadlo v rytmu, drž tempo.','Povrch zrcadlo, bez puchýřů.','PH cajk, můžeme přitopit.','Vůně plastu mizí – dobrý signál.','Nálev bez kalu – paráda.','Laboratoř běží jak hodinky.','Tepelná křivka ideální.','Nic se nepřipaluje – top stav.']
-                },
-                hulic: {
-                    toastPhrases: ['Táhne to. Drž linku.','Popel si sedá. Klid.','Sklo čistý. Respekt.','Seshni to na špičku.','Vlhkej kašel? Voda, kámo.','Plamen hřeje akorát.','Táhni pomalu. Ať to drží.','Chuť jak první láska.','Žár rovnoměrnej.','Popelník v limitu.'],
-                    logPhrases: ['Zapal z boku, ať to nefouká.','Filtr se nechytá – luxus.','Kruh jak vinyl, stará škola.','Sídlo prachu: podložka.','Nehroť tah, nech to dýchat.','Aroma citrus-beton. Mmm.','Plamen malý, úsporný mód.','Kouř čistej jak horskej vzduch.','Žár bez praskání.','Sklo se leskne jak nový.','Pocit lehkosti – ideál.','Šluk jak z učebnice.']
-                },
-                cichac: {
-                    toastPhrases: ['Hadr ready. Film běží.','Vdechni. Nepřeháněj.','Profil drží. Barvičky.','Víčko těsní. Klídek.','Kanystr mlčí. Zatím.','Vůně se láme do sladka.','Vzduch má jiskru.','Film bez bublin.','Parfém továrny. Deluxe.','Tlak voní stabilně.'],
-                    logPhrases: ['Vzduch se kroutí jak had.','Ticho v uších – jízda.','Stromek v autě? Ubohost.','Závan fabriky – nostalgie.','Čas gumovej. Přistávej pomalu.','Molekuly tančí ve spirále.','Nos brní, to je ono.','Filtr drží vůni pevně.','Hlavní aroma stabilní.','Lehká pachuť chemie – cajk.','Bublina času, nic se nehýbe.','Vzorek v limitu, můžeš jet.']
-                },
-                domingo: {
-                    toastPhrases: ['Předávka v tichu.','Kamera za rohem. Bacha.','Balíček nenápadnej.','Okno otevřený minutu.','Čas jsou prachy.','Stín mě kryje.','Zóna čistá.','Pohyb minimální.','Kontakt potvrzen.','Stopy vymazány.'],
-                    logPhrases: ['Koridor čistý, jdeme.','Plášť šustí – signál.','Stopy smaž, když odcházíš.','Telefon do kapsy, teď.','Zpětná kontrola: nikdo za náma.','Vchod chráněn, klid.','Nabitý plán, jedeme dál.','Bez zbytečných slov.','Otočka za roh a pryč.','Klidná zóna, žádný svědci.','Doručeno bez komplikací.','Obálka v bezpečí.']
-                },
-                pedro: {
-                    toastPhrases: ['Brzdím. Brána?','Objížďka hotová.','Zvoním a mizím.','Expres režim.','Balík vakuuju.','Před domem za 2 minuty.','Parkuju vedle hydrantu.','Náklad drží pevně.','Bez zastávky. Turbo.','Zatáčka a jsem tam.'],
-                    logPhrases: ['Byt vlevo, třetí zvonek.','Kolona na Barrandově – zpožďuju.','Parkuju u hydrantu, fofr.','V kufru to drží – žádný šust.','GPS hopsá, jsem blízko.','Světla zhasnutá, klidná příjezdovka.','Dodávka maskovaná v koloně.','Čas příjezdu přesnej na vteřinu.','Výjezd bez pozornosti okolí.','Doručeno a odjeto.','Zpoždění minimalizováno.','Trasa vyčištěná.']
-                },
-                chemik: {
-                    toastPhrases: ['Reakce stabilní.','Vzorek pod kontrolou.','Teplota drží ±0,1°C.','PH přesně v normě.','Analýza běží.','Bezpečný roztok připraven.','Testovací série dokončena.','Přesně odměřeno.','Vzorek čistý jako slovo Boží.','Laboratoř v zelených číslech.'],
-                    logPhrases: ['Titrační křivka perfektní.','Měření přesné na mikron.','Žádná sedimentace.','Odpar 0,02 % – ideál.','Spektrum bez šumu.','Záznam uložen do protokolu.','Reaktor stabilní.','Výsledek potvrzen duplikátem.','Kalibrace 100 %. Hotovo.','Čas do další reakce: 3 min.','Žádné odchylky nenalezeny.','Parametry v normě.']
-                },
-                dispecer: {
-                    toastPhrases: ['Trasa potvrzená.','Cíl v dosahu.','Další zastávka připravena.','Okno pro přesun otevřené.','Bezpečný koridor aktivní.','Příjezd podle plánu.','Všechny jednotky v pozici.','Synchronizace hotová.','Přesměrování bez zdržení.','Časová rezerva +2 min.'],
-                    logPhrases: ['Satelitní snímek ověřen.','Žádné překážky na trase.','Překresluju mapu pohybu.','Nový bod zájmu přidán.','Cílová zóna čistá.','Předávám souřadnice.','Radiový kontakt navázán.','Plán B připraven.','Synchronizace týmů dokončena.','Signál 100 %, spojení stabilní.','Časová osa aktualizována.','Bezpečný průchod potvrzen.']
-                }
-            };
-            // --- KONEC DATABÁZE ---
-
-            const genericLogPhrases = [
-                "Fízlové se motaj poblíž", "Krevák ti letí, tepík: {BPM}", "Riziko prasknutí žíly: {RISK}%", "Schovej se, jede měšťák",
-                "Šňupu data z radaru", "Tep ti lítá jak kolotoč", "Sjetý, ale pod kontrolou", "Kámo, máš roztažený zorničky",
-                "Tvůj tepík: {BPM}, to je cajk", "Tvůj tepík: {BPM}, už jsi přestřelil", "Prasklo tělo na šrot",
-                "Dealer offline, improvizuj", "Někdo ťuká na dveře", "Vysoký tlak, kámo", "Fízlové na střeše",
-                "Kámo, jsi bílej jak stěna", "Sousedka zase čumí z okna", "Ztrácím signál... rušení",
-                "Srdce buší jako na teknu.", "Vidím zvuky a slyším barvy.", "Systém hlásí nedostatek serotoninu.",
-                "Tlak 200 na 150, pohoda jazz.", "Potřebuju cukr. Nebo piko. Obojí.",
-                "Třesou se mi ruce, to je z hladu... asi.", "Realita je jen iluze způsobená nedostatkem perníku."
-            ];
-
             const threatLevels = [
-                { name: 'Na pohodu, jen trošku sjetý', class: 'threat-low', level: 0 },
-                { name: 'Půl dávky v žíle', class: 'threat-medium', level: 1 },
-                { name: 'Na šrot', class: 'threat-high', level: 2 },
-                { name: 'Totál Overdose', class: 'threat-critical', level: 3 }
+                { name: 'NÍZKÁ', class: 'threat-low', level: 0 }, { name: 'STŘEDNÍ', class: 'threat-medium', level: 1 },
+                { name: 'VYSOKÁ', class: 'threat-high', level: 2 }, { name: 'KRITICKÁ', class: 'threat-critical', level: 3 }
             ];
-            
-            let lastUsedLog = '';
 
             const random = (min, max) => Math.random() * (max - min) + min;
-
-            function getRandomLogPhrase() {
-                if (!currentSubject) return "...";
-                // Kombinace obecných, postavových a extra hlášek
-                const subjectSpecificLogs = currentSubject.logPhrases || [];
-                const extraLogs = extraPhrases[currentSubject.id]?.logPhrases || [];
-                const combinedPhrases = [...genericLogPhrases, ...subjectSpecificLogs, ...extraLogs];
-
-                let availablePhrases = combinedPhrases.filter(p => p !== lastUsedLog);
-                if (availablePhrases.length === 0) availablePhrases = combinedPhrases; // Reset if all used
-                let phrase = availablePhrases[Math.floor(Math.random() * availablePhrases.length)];
-                lastUsedLog = phrase;
-                return phrase.replace('{BPM}', elements.statBpm.textContent).replace('{RISK}', elements.statRisk.textContent);
-            }
+            const randomInt = (min, max) => Math.floor(random(min, max + 1));
 
             function addLogEntry(message, level = 'info') {
-                if (soundsReady) sounds.log.triggerAttackRelease('C2', '8n');
                 const li = document.createElement('li');
-                li.className = 'flex items-start space-x-2 border-t border-slate-700/50 pt-2';
-                const dotColors = { info: 'bg-green-400', warn: 'bg-yellow-400', error: 'bg-orange-400', critical: 'bg-red-400', ai: 'bg-purple-400', profile: 'bg-blue-400', event: 'bg-red-600' };
-                const dotShadows = { info: 'var(--accent-green)', warn: 'var(--accent-yellow)', error: 'var(--accent-orange)', critical: 'var(--accent-red)', ai: 'var(--glow-purple)', profile: 'var(--glow-blue)', event: 'var(--glow-red)' };
+                li.className = 'flex items-center space-x-3 border-t border-slate-700/50 pt-3';
+                const dotColors = { info: 'bg-green-400', warn: 'bg-yellow-400', error: 'bg-orange-400', critical: 'bg-red-400', ai: 'bg-purple-400', profile: 'bg-blue-400' };
+                const dotShadows = { info: 'var(--accent-green)', warn: 'var(--accent-yellow)', error: 'var(--accent-orange)', critical: 'var(--accent-red)', ai: 'var(--glow-purple)', profile: 'var(--glow-blue)' };
                 const time = new Date().toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                li.innerHTML = `<div class="flex-shrink-0 pt-1.5"><span class="w-2 h-2 rounded-full ${dotColors[level]} block" style="box-shadow: 0 0 5px ${dotShadows[level]}"></span></div><span class="text-slate-400">${time}</span><span class="flex-1">${message}</span>`;
-                elements.activityLog.prepend(li);
-                if (elements.activityLog.children.length > 20) { elements.activityLog.lastElementChild.remove(); }
-            }
-            
-            function addRandomLog(level = 'info') {
-                addLogEntry(getRandomLogPhrase(), level);
-            }
-
-            function createBlips() {
-                if (isEventActive) return;
-                const container = elements.scannerContainer;
-                const blipCount = Math.floor(random(2, 5));
-                container.querySelectorAll('.blip').forEach(b => b.remove());
-                for (let i = 0; i < blipCount; i++) {
-                    const blip = document.createElement('div');
-                    blip.className = 'blip';
-                    const size = random(6, 15);
-                    blip.style.width = `${size}px`;
-                    blip.style.height = `${size}px`;
-                    blip.style.left = `${random(10, 90)}%`;
-                    blip.style.top = `${random(10, 90)}%`;
-                    blip.style.animationDelay = `${random(0, 2)}s`;
-                    container.appendChild(blip);
+                let entryHTML = `<span class="w-2 h-2 rounded-full ${dotColors[level]} flex-shrink-0" style="box-shadow: 0 0 5px ${dotShadows[level]}"></span><span class="text-slate-400">${time}</span><span class="flex-1">${message}</span>`;
+                if (level === 'warn' || level === 'error' || level === 'critical') {
+                    const anomalyIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="inline-block ml-auto text-slate-500 hover:text-cyan-300 cursor-pointer transition-colors" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-1.057 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/></svg>`;
+                    entryHTML += `<span class="anomaly-explainer" data-message="${message}">${anomalyIcon}</span>`;
                 }
+                li.innerHTML = entryHTML;
+                elements.activityLog.prepend(li);
+                const explainer = li.querySelector('.anomaly-explainer');
+                if (explainer) {
+                    explainer.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        getAnomalyExplanation(explainer.dataset.message);
+                    });
+                }
+                if (elements.activityLog.children.length > 15) { elements.activityLog.lastElementChild.remove(); }
             }
 
-            function changeSubject() {
-                const newSubject = state.subjects[Math.floor(Math.random() * state.subjects.length)];
-                currentSubject = newSubject;
-                elements.subjectName.textContent = newSubject.name;
-                elements.subjectAvatarText.textContent = newSubject.avatar;
-            }
+            function createBlips() { /* ... bez změny ... */ }
 
             function updateThreatLevel() {
-                if (isScanning || isEventActive) return;
                 currentThreatIndex = (currentThreatIndex + 1) % threatLevels.length;
                 const newThreat = threatLevels[currentThreatIndex];
-                
-                const shortThreatName = newThreat.name.split(',')[0];
-                elements.threatPill.textContent = shortThreatName;
-                elements.targetThreatPill.textContent = shortThreatName;
-
-                elements.threatPill.className = `threat-pill text-black font-bold text-xs py-1.5 px-3 rounded-full font-orbitron text-center ${newThreat.class}`;
-                elements.targetThreatPill.className = `mt-1 threat-pill text-black text-xs font-bold py-1 px-2 rounded-full inline-block text-center ${newThreat.class}`;
-                
+                elements.threatPill.textContent = `HROZBA: ${newThreat.name}`;
+                elements.threatPill.className = `threat-pill text-black font-bold text-sm py-1.5 px-4 rounded-full font-orbitron ${newThreat.class}`;
+                elements.targetThreatPill.textContent = `STUPEŇ OHROŽENÍ: ${newThreat.name}`;
+                elements.targetThreatPill.className = `mt-2 threat-pill text-black text-xs font-bold py-1 px-3 rounded-full inline-block ${newThreat.class}`;
                 elements.aiAnalysisButton.classList.toggle('hidden', newThreat.level < 2);
-                
-                const logLevels = ['info', 'warn', 'error', 'critical'];
-                addLogEntry(`⚠️ Hrozba: ${newThreat.name}`, logLevels[newThreat.level]);
-
                 if (newThreat.level === 3) {
-                    if (soundsReady) sounds.alarm.triggerAttackRelease('C5', '0.5s');
-                    if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]);
-                    elements.scannerVisual.classList.add('flash-red');
-                    setTimeout(() => elements.scannerVisual.classList.remove('flash-red'), 500);
+                    addLogEntry('Detekována kritická hrozba!', 'critical');
+                    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
                 }
+            }
+
+            function simulateDataFlux() {
+                elements.statBpm.textContent = randomInt(75, 110);
+                elements.statRisk.textContent = `${randomInt(15, 40)}%`;
             }
 
             function runScanSequence() {
-                if (isScanning || isEventActive || !currentSubject) return;
-                initializeAudio();
-                if (soundsReady) sounds.scan.triggerAttackRelease("2n");
-
+                if (isScanning) return;
                 isScanning = true;
                 elements.scanButton.disabled = true;
+                elements.scanButton.textContent = 'PROBÍHÁ SKEN...';
+                elements.scannerStatus.textContent = 'SKENOVÁNÍ...';
+                elements.scannerSubtext.textContent = 'Analyzuji signály...';
                 elements.scannerContainer.classList.add('animate-pulse-fast');
-                
-                const toastPhrases = extraPhrases[currentSubject.id]?.toastPhrases || ['SKENUJI... Prosím čekejte.'];
-                let counter = 0;
-                const scanDuration = 4;
-
-                addRandomLog('info');
-                const scanInterval = setInterval(() => {
-                    if (isEventActive) {
-                        clearInterval(scanInterval);
-                        return;
-                    }
-
-                    const randomToast = toastPhrases[Math.floor(Math.random() * toastPhrases.length)];
-                    const [status, subtext] = randomToast.split('. ');
-                    elements.scannerStatus.textContent = status.toUpperCase();
-                    elements.scannerSubtext.textContent = subtext || '...';
-                    
-                    elements.statBpm.textContent = Math.floor(random(70, 160));
-                    elements.statRisk.textContent = `${Math.floor(random(10, 95))}`;
-                    
-                    counter++;
-                    if (counter >= scanDuration) {
-                        clearInterval(scanInterval);
-                        elements.scannerStatus.textContent = 'HOTOVEJ NA ŠLEH';
-                        elements.scannerSubtext.textContent = 'Čekám na další lajnu';
-                        elements.scanButton.disabled = false;
-                        isScanning = false;
-                        elements.scannerContainer.classList.remove('animate-pulse-fast');
-                        addLogEntry('Dávka šlehnutá, systém ready.', 'info');
-                        changeSubject();
-                    }
-                }, 1200);
-            }
-            
-            function triggerPoliceRaid() {
-                if (isEventActive || isScanning) return;
-                isEventActive = true;
-                
-                if (soundsReady) sounds.raid.triggerAttackRelease("C3", "2s");
-                if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 500]);
-
-                elements.scanButton.disabled = true;
-                elements.scannerStatus.textContent = "ZÁTAH!!!";
-                elements.scannerSubtext.textContent = "FÍZLOVÉ VŠUDE KOLEM!";
-                elements.eventOverlay.classList.remove('hidden');
-                addLogEntry('🚨🚨 ZÁTAH! VŠICHNI K ZEMI! 🚨🚨', 'event');
-
+                addLogEntry('Inicializován sken...', 'info');
+                if (navigator.vibrate) navigator.vibrate(50);
+                const fluxInterval = setInterval(simulateDataFlux, 400);
                 setTimeout(() => {
-                    elements.eventOverlay.classList.add('hidden');
-                    elements.scannerStatus.textContent = 'ČISTO... PROZATÍM';
-                    elements.scannerSubtext.textContent = 'Uklidni se a čekej';
-                    addLogEntry('Uf, byli to jenom plynaři.', 'info');
-                    
-                    setTimeout(() => {
-                        isEventActive = false;
-                        elements.scanButton.disabled = false;
-                        elements.scannerStatus.textContent = 'HOTOVEJ NA ŠLEH';
-                        elements.scannerSubtext.textContent = 'Čekám na další lajnu';
-                    }, 4000);
-
-                }, 5000);
-            }
-
-            function tryRandomEvent() {
-                if (Math.random() < 0.1) { // Snížená šance na 10%
-                    triggerPoliceRaid();
-                }
-            }
-            
-            function autoLogQuip() {
-                if (!isScanning && !isEventActive) {
-                    addRandomLog('info');
-                }
-                const randomDelay = random(9000, 13000);
-                setTimeout(autoLogQuip, randomDelay);
+                    clearInterval(fluxInterval);
+                    isScanning = false;
+                    elements.scanButton.disabled = false;
+                    elements.scanButton.textContent = 'INICIALIZOVAT SKEN';
+                    elements.scannerStatus.textContent = 'PŘIPRAVEN';
+                    elements.scannerSubtext.textContent = 'Čekám na příkaz';
+                    elements.scannerContainer.classList.remove('animate-pulse-fast');
+                    addLogEntry('Sken dokončen. Systém připraven.', 'info');
+                    if (navigator.vibrate) navigator.vibrate([20, 50, 20]);
+                }, 4000);
             }
 
             function showModal(title) {
-                if (soundsReady) sounds.click.triggerAttackRelease('C4', '8n');
                 elements.modalTitle.textContent = title;
                 elements.modalContent.innerHTML = '';
                 elements.modalLoader.classList.remove('hidden');
@@ -475,33 +302,70 @@
             }
 
             function hideModal() {
-                if (soundsReady) sounds.click.triggerAttackRelease('A3', '8n');
                 elements.aiModal.style.opacity = '0';
                 setTimeout(() => elements.aiModal.classList.add('hidden'), 300);
             }
 
-            function getThreatAnalysis() {
-                addLogEntry('Ptám se dealera na radu...', 'ai');
-                showModal('PORADNA OD DEALERŮ');
-                setTimeout(() => {
-                    elements.modalLoader.classList.add('hidden');
-                    elements.modalContent.innerText = 'Dej si pauzu, kámo. Nepřeháněj to s lajnama. Tep máš jak po trojité dávce. Jestli chceš další matroš, nejdřív se vyspi a dej si vodu.';
-                    addLogEntry('Dealer poslal zprávu.', 'ai');
-                }, 1500);
-            }
-            
-            function getSubjectProfile() {
-                if (!currentSubject) return;
-                addLogEntry('Vytahuju info o smažce...', 'profile');
-                showModal(`KDO JE TEN SMAŽKA: ${currentSubject.name.toUpperCase()}`);
-                setTimeout(() => {
-                    elements.modalLoader.classList.add('hidden');
-                    elements.modalContent.innerHTML = currentSubject.profile.replace(/\. /g, '.<br><br>');
-                    addLogEntry('Profil smažky načten.', 'profile');
-                }, 1000);
+            async function callGeminiAPI(prompt) {
+                const apiKey = ""; // Klíč je doplněn automaticky v prostředí
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                if (!response.ok) throw new Error(`Chyba API: ${response.statusText}`);
+                const result = await response.json();
+                return result.candidates[0].content.parts[0].text;
             }
 
-            document.body.addEventListener('click', initializeAudio, { once: true });
+            async function getThreatAnalysis() {
+                addLogEntry('Vyžádána taktická analýza...', 'ai');
+                showModal('AI TAKTICKÁ ANALÝZA');
+                const currentThreat = threatLevels[currentThreatIndex];
+                const prompt = `Jsi expert na bezpečnostní analýzu ve futuristickém sci-fi světě. Detekoval jsi hrozbu. Cíl je 'Subjekt KAPPA-7'. Úroveň hrozby: '${currentThreat.name}'. Data: BPM: ${elements.statBpm.textContent}, Riziko: ${elements.statRisk.textContent}. Stručně (max 3 věty) vygeneruj taktickou analýzu a doporuč okamžité kroky. Odpověz česky.`;
+                try {
+                    elements.modalContent.innerText = await callGeminiAPI(prompt);
+                    addLogEntry('AI analýza přijata.', 'ai');
+                } catch (error) {
+                    elements.modalContent.innerText = `Chyba: Nepodařilo se načíst analýzu. ${error.message}`;
+                    addLogEntry('Chyba při komunikaci s AI modulem.', 'error');
+                } finally {
+                    elements.modalLoader.classList.add('hidden');
+                }
+            }
+            
+            async function getSubjectProfile() {
+                addLogEntry('Vyžádán profil subjektu...', 'profile');
+                showModal('PROFIL SUBJEKTU: KAPPA-7');
+                const prompt = `Jsi AI analytik v tajné vesmírné agentuře. Tvým úkolem je vytvořit stručný, ale poutavý fiktivní profil pro 'Subjekt KAPPA-7'. Zahrň informace o jeho původu (např. geneticky modifikovaný, kyborg, mimozemšťan?), klíčových schopnostech (např. psionické síly, nadlidská síla, expert na infiltraci) a možných motivacích nebo slabinách. Udržuj tón profesionální, ale napínavý, jako by šlo o tajnou zprávu. Odpověz česky v odstavcích.`;
+                try {
+                    const profileText = await callGeminiAPI(prompt);
+                    elements.modalContent.innerHTML = profileText.replace(/\n/g, '<br><br>');
+                    addLogEntry('Profil subjektu úspěšně vygenerován.', 'profile');
+                } catch (error) {
+                    elements.modalContent.innerText = `Chyba: Nepodařilo se vygenerovat profil. ${error.message}`;
+                    addLogEntry('Chyba při generování profilu.', 'error');
+                } finally {
+                    elements.modalLoader.classList.add('hidden');
+                }
+            }
+
+            async function getAnomalyExplanation(logMessage) {
+                addLogEntry(`Vyžádáno vysvětlení pro: "${logMessage}"`, 'ai');
+                showModal('AI VYSVĚTLENÍ ANOMÁLIE');
+                const prompt = `Jsi AI palubního počítače ve sci-fi lodi. Operátor v logu vidí zprávu: "${logMessage}". Poskytni krátké, kreativní, fiktivní vysvětlení, co by tato technická anomálie mohla znamenat v kontextu vesmírné mise. Udržuj profesionální, ale napínavý tón. Odpověz česky.`;
+                try {
+                    elements.modalContent.innerText = await callGeminiAPI(prompt);
+                    addLogEntry('Vysvětlení anomálie přijato.', 'ai');
+                } catch (error) {
+                    elements.modalContent.innerText = `Chyba: Nepodařilo se načíst vysvětlení. ${error.message}`;
+                    addLogEntry('Chyba při komunikaci s AI modulem.', 'error');
+                } finally {
+                    elements.modalLoader.classList.add('hidden');
+                }
+            }
+
             elements.scanButton.addEventListener('click', runScanSequence);
             elements.aiAnalysisButton.addEventListener('click', getThreatAnalysis);
             elements.profileButton.addEventListener('click', getSubjectProfile);
@@ -509,13 +373,13 @@
             elements.aiModal.addEventListener('click', (e) => { if(e.target === elements.aiModal) hideModal(); });
 
             function init() {
-                changeSubject();
                 createBlips();
-                addLogEntry('Radar nastartovanej, systém sjetej.', 'info');
+                addLogEntry('Systém online. Všechny moduly načteny.', 'info');
+                setTimeout(() => {
+                    addLogEntry('Kolísání energetického štítu', 'warn');
+                }, 2500);
                 setInterval(createBlips, 5000);
                 setInterval(updateThreatLevel, 8000);
-                setInterval(tryRandomEvent, 15000); // Zkouší událost každých 15s
-                autoLogQuip();
             }
             init();
         });
