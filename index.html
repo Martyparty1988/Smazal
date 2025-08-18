@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Najdi smažák v11.0 - Bad Trip Edice</title>
+    <title>Najdi smažák v13.0 - UI Fix</title>
     
     <!-- PWA Icon and Manifest Generator -->
     <script>
@@ -11,11 +11,10 @@
             function drawIcon(size) {
                 const canvas = document.createElement('canvas'); canvas.width = size; canvas.height = size; const ctx = canvas.getContext('2d'); const scale = size / 512; ctx.fillStyle = '#0a192f'; ctx.fillRect(0, 0, size, size); ctx.save(); ctx.translate(size / 2, size / 2); const bagWidth = 280 * scale; const bagHeight = 320 * scale; ctx.beginPath(); ctx.moveTo(-bagWidth / 2, -bagHeight / 2 + 50 * scale); ctx.lineTo(-bagWidth / 2, bagHeight / 2); ctx.quadraticCurveTo(0, bagHeight / 2 + 40 * scale, bagWidth / 2, bagHeight / 2); ctx.lineTo(bagWidth / 2, -bagHeight / 2 + 50 * scale); ctx.closePath(); ctx.fillStyle = 'rgba(230, 240, 255, 0.15)'; ctx.strokeStyle = 'rgba(150, 180, 220, 0.4)'; ctx.lineWidth = 6 * scale; ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.moveTo(-bagWidth / 2 * 0.8, bagHeight / 2); ctx.quadraticCurveTo(-bagWidth / 2 * 0.5, bagHeight / 2 - 100 * scale, 0, bagHeight / 2 - 50 * scale); ctx.quadraticCurveTo(bagWidth / 2 * 0.5, bagHeight / 2 - 100 * scale, bagWidth / 2 * 0.8, bagHeight / 2); ctx.closePath(); ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'; ctx.shadowColor = 'rgba(255, 255, 255, 0.7)'; ctx.shadowBlur = 20 * scale; ctx.fill(); ctx.shadowBlur = 0; ctx.fillStyle = 'rgba(20, 30, 50, 0.5)'; ctx.fillRect(-bagWidth/2 - 10*scale, -bagHeight/2 + 40*scale, bagWidth + 20*scale, 20*scale); ctx.strokeStyle = 'rgba(150, 180, 220, 0.6)'; ctx.strokeRect(-bagWidth/2 - 10*scale, -bagHeight/2 + 40*scale, bagWidth + 20*scale, 20*scale); ctx.beginPath(); ctx.moveTo(-40 * scale, -bagHeight / 2 + 40 * scale); ctx.quadraticCurveTo(0, -bagHeight/2 - 30 * scale, 40 * scale, -bagHeight/2 + 40 * scale); ctx.strokeStyle = '#facc15'; ctx.lineWidth = 10 * scale; ctx.stroke(); ctx.restore(); return canvas.toDataURL('image/png');
             }
-            const icon192 = drawIcon(192), icon512 = drawIcon(512), favicon = drawIcon(32), themeColor = '#0a192f'; const manifest = { name: "Najdi smažák v11.0", short_name: "Smažák", start_url: ".", display: "standalone", background_color: themeColor, theme_color: themeColor, icons: [{ src: icon192, type: "image/png", sizes: "192x192" }, { src: icon512, type: "image/png", sizes: "512x512" }] }; const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' }); const manifestURL = URL.createObjectURL(blob); document.head.insertAdjacentHTML('beforeend', `<link rel="icon" href="${favicon}"><link rel="apple-touch-icon" href="${icon192}"><link rel="manifest" href="${manifestURL}"><meta name="theme-color" content="${themeColor}"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">`);
+            const icon192 = drawIcon(192), icon512 = drawIcon(512), favicon = drawIcon(32), themeColor = '#0a192f'; const manifest = { name: "Najdi smažák v13.0", short_name: "Smažák", start_url: ".", display: "standalone", background_color: themeColor, theme_color: themeColor, icons: [{ src: icon192, type: "image/png", sizes: "192x192" }, { src: icon512, type: "image/png", sizes: "512x512" }] }; const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' }); const manifestURL = URL.createObjectURL(blob); document.head.insertAdjacentHTML('beforeend', `<link rel="icon" href="${favicon}"><link rel="apple-touch-icon" href="${icon192}"><link rel="manifest" href="${manifestURL}"><meta name="theme-color" content="${themeColor}"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">`);
         })();
     </script>
 
-    <!-- Three.js a Post-processing efekty pro "Bad Trip" grafiku -->
     <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
     <script type="importmap">
     {
@@ -42,7 +41,6 @@
         #root { position: fixed; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; }
         #stage { position: relative; width: 360px; height: 640px; transform-origin: center center; overflow: hidden; display: flex; flex-direction: column; padding: var(--safe-area-top) var(--safe-area-right) var(--safe-area-bottom) var(--safe-area-left); }
         
-        /* --- GRUNGE & GLITCH OVERLAY --- */
         #stage::before { content: ''; position: absolute; inset: 0; z-index: 99; pointer-events: none; box-shadow: inset 0 0 100px 20px rgba(10, 25, 47, 0.8); background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXVpaWl9fX1ZWVkICAgHBwdQUFBKSkpISEhHR0dISEhDQ0NERERGRkYAAAAAAAD///8EBAQAAAAAAAD///8fHx9aWloBAQG2S3bOAAAAAXRSTlMAQObYZgAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAEBJREFUOI1jYBgFo2AUjIJRMApGwSigixrB+d9h56/58x8w8M9/4M8/YOB3+PNfMPA/fPif+fMfMPA/fPif+fM/AAC23wHlKULTiAAAAABJRU5ErkJggg=='); opacity: 0.05; }
         #stage::after { content: ''; position: absolute; inset: 0; z-index: 100; pointer-events: none; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 4px, 3px 100%; animation: flicker 0.15s infinite; }
         @keyframes flicker { 0% { opacity: 0.2; } 20% { opacity: 0.8; } 40% { opacity: 0.3; } 60% { opacity: 0.9; } 80% { opacity: 0.2; } 100% { opacity: 0.8; } }
@@ -68,10 +66,13 @@
         .btn:hover:not(:disabled) { box-shadow: 0 0 30px 5px var(--glow-purple), inset 0 0 10px rgba(255,255,255,0.5); transform: translateY(-2px); }
         .btn:active:not(:disabled) { transform: scale(0.97) translateY(1px); }
         .btn:disabled { filter: grayscale(80%) brightness(0.7); opacity: 0.6; cursor: not-allowed; box-shadow: none; }
-        #toast-container { position: absolute; bottom: 100px; left: 20px; right: 20px; display: flex; flex-direction: column-reverse; gap: 8px; z-index: 40; pointer-events: none; }
-        .toast { background: var(--glass-bg); backdrop-filter: blur(10px); padding: 10px 14px; border-radius: 12px; font-size: 13px; border-left: 4px solid var(--accent-cyan); animation: toast-in 0.4s ease-out, toast-out 0.4s ease-in 4.6s; opacity: 0; }
-        @keyframes toast-in { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes toast-out { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-20px); } }
+        
+        #toast-container { position: absolute; bottom: 100px; left: 20px; width: 200px; display: flex; flex-direction: column; gap: 0; z-index: 40; pointer-events: none; }
+        .toast { background: var(--glass-bg); backdrop-filter: blur(10px); padding: 10px 14px; border-radius: 12px; font-size: 13px; border-left: 4px solid var(--accent-cyan); transition: all 0.4s ease; transform-origin: bottom left; margin-top: -15px; }
+        .toast:first-child { margin-top: 0; }
+        .toast.toast-entering { opacity: 0; transform: translateX(-20px); }
+        .toast.toast-exiting { opacity: 0; transform: translateY(20px); }
+
         .panel { margin: auto; width: 90%; background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 24px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); padding: 24px; text-align: center; }
         .scan-active { animation: screen-shake 0.5s, chromatic-aberration 0.5s; }
         @keyframes screen-shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); } 20%, 40%, 60%, 80% { transform: translateX(2px); } }
@@ -88,10 +89,9 @@
         .timing-bar-target { position: absolute; top: 0; height: 100%; background-color: rgba(74, 222, 128, 0.5); }
         .timing-bar-marker { position: absolute; top: 0; height: 100%; width: 4px; background-color: var(--accent-cyan); box-shadow: 0 0 5px var(--accent-cyan); }
         
-        /* --- UI FIX: Varna Button Repositioned --- */
-        #varna-icon-button { position: absolute; bottom: 110px; left: 20px; z-index: 20; width: 64px; height: 64px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 99px; backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; }
+        #varna-icon-button { position: absolute; bottom: 110px; right: 20px; z-index: 20; width: 64px; height: 64px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 99px; backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; }
         #varna-icon-button:hover { border-color: var(--accent-purple); box-shadow: 0 0 15px var(--glow-purple); transform: scale(1.05); }
-        #varna-icon-button svg { width: 32px; height: 32px; fill: var(--accent-purple); transition: all 0.2s; }
+        #varna-icon-button svg { width: 36px; height: 36px; fill: var(--accent-purple); transition: all 0.2s; }
         #varna-icon-button:hover svg { fill: var(--text-primary); filter: drop-shadow(0 0 5px var(--accent-purple)); }
 
         #scene-varna, #scene-upgrades { justify-content: center; align-items: center; }
@@ -100,6 +100,13 @@
         .upgrade-item { padding: 12px; border: 1px solid var(--glass-border); border-radius: 8px; margin-bottom: 8px; text-align: left; }
         .upgrade-item.unlocked { border-color: var(--accent-green); background-color: rgba(74, 222, 128, 0.1); }
         .upgrade-item h4 { color: var(--accent-yellow); }
+        
+        /* --- NEW: Varna Toast --- */
+        #varna-toast { position: absolute; top: 25%; left: 0; right: 0; text-align: center; pointer-events: none; z-index: 60; }
+        .varna-toast-message { display: inline-block; padding: 8px 16px; background: var(--glass-bg); border-radius: 12px; font-size: 1.1rem; font-weight: bold; text-shadow: 0 0 10px; transition: all 0.3s ease; transform: translateY(20px); opacity: 0; }
+        .varna-toast-message.success { color: var(--accent-green); text-shadow: 0 0 10px var(--accent-green); }
+        .varna-toast-message.fail { color: var(--accent-red); text-shadow: 0 0 10px var(--accent-red); }
+        .varna-toast-message.visible { transform: translateY(0); opacity: 1; }
 
         @media (prefers-reduced-motion: reduce) {
             .scanner-ring, .scanner-line, #stage::after, .scan-active, .pulse { animation: none; }
@@ -130,18 +137,19 @@
                     <div id="paranoia-ticker"></div>
                     <div id="scanner" role="button" aria-label="Skenovací oblast"><div class="scanner-ring"></div><div class="scanner-line"></div><div class="font-orbitron text-2xl font-black text-cyan-300 text-center" style="text-shadow: 0 0 15px var(--glow-cyan);">NAJDI<br>SMAŽÁK</div></div>
                     <div id="varna-icon-button" aria-label="Uvařit dávku">
-                        <svg viewBox="0 0 24 24"><path d="M19.87 11.13C19.67 10.29 19.06 9.63 18.2 9.33L14.67 8C15.3 7.13 15.5 6 15.2 4.91C14.79 3.4 13.27 2.47 11.75 2.89C10.23 3.3 9.3 4.82 9.7 6.34C9.9 7.13 10.45 7.79 11.14 8.15L11.33 8.25L7.8 9.33C6.94 9.63 6.33 10.29 6.13 11.13L3 22H21L19.87 11.13M12 20C10.34 20 9 18.66 9 17C9 15.34 10.34 14 12 14C13.66 14 15 15.34 15 17C15 18.66 13.66 20 12 20Z"></path></svg>
+                        <svg viewBox="0 0 24 24"><path d="M20.71 7.04c.34-.34.34-.9 0-1.24l-2.83-2.83c-.34-.34-.9-.34-1.24 0l-1.93 1.93L19.41 9.59l1.3-2.55M12 14.5c-1.61 0-3.09.59-4.23 1.57L3 20.8V21h.2L7.77 16.23c1.14-.98 2.62-1.57 4.23-1.57s3.09.59 4.23 1.57L20.8 21H21v-.2l-4.77-4.77c-1.14-.98-2.62-1.57-4.23-1.57M12 13c.83 0 1.58-.21 2.26-.58L17.6 9.08l-4.69-4.69-3.34 3.34C9.21 8.42 9 9.17 9 10c0 1.66 1.34 3 3 3z"/></svg>
                     </div>
                 </main>
 
                 <footer id="actions"><button id="scan-button" class="btn w-full"></button></footer>
             </div>
             
-            <div id="scene-menu" class="scene items-center justify-center"><div class="panel"><h1 class="font-orbitron text-4xl font-black text-cyan-300 mb-2" style="text-shadow: 0 0 15px var(--glow-cyan);">NAJDI SMAŽÁK</h1><p class="text-slate-400 mb-6">v11.0 - Bad Trip</p><div class="flex flex-col gap-3"><button id="play-button" class="btn w-full">HRÁT</button><button id="upgrades-button" class="btn w-full bg-yellow-400/90" style="background: linear-gradient(45deg, #fde047, #f59e0b); box-shadow: 0 0 20px rgba(250, 204, 21, 0.45);">VYLEPŠENÍ</button></div></div></div>
+            <div id="scene-menu" class="scene items-center justify-center"><div class="panel"><h1 class="font-orbitron text-4xl font-black text-cyan-300 mb-2" style="text-shadow: 0 0 15px var(--glow-cyan);">NAJDI SMAŽÁK</h1><p class="text-slate-400 mb-6">v12.0 - Final Cut</p><div class="flex flex-col gap-3"><button id="play-button" class="btn w-full">HRÁT</button><button id="upgrades-button" class="btn w-full bg-yellow-400/90" style="background: linear-gradient(45deg, #fde047, #f59e0b); box-shadow: 0 0 20px rgba(250, 204, 21, 0.45);">VYLEPŠENÍ</button></div></div></div>
             
             <div id="overlay" class="overlay hidden items-center justify-center" role="dialog" aria-modal="true"><div class="panel"><h2 id="overlay-title" class="font-orbitron text-2xl font-bold text-cyan-300 mb-4"></h2><div id="overlay-content" class="panel-content text-slate-300 mb-6"></div><div class="flex flex-col gap-3"><button id="back-button" class="btn w-full bg-gray-500/80" style="background: #4b5563; box-shadow: none;"></button></div></div></div>
 
             <div id="scene-varna" class="scene hidden items-center justify-center">
+                <div id="varna-toast"></div>
                 <div class="panel">
                     <h2 class="font-orbitron text-2xl font-bold text-cyan-300 mb-2">PROCES VAŘENÍ</h2>
                     <p class="text-slate-400 text-sm">Čistota dávky: <b id="varna-purity-label">100%</b></p>
@@ -176,7 +184,6 @@
         import { FilmPass } from 'three/addons/postprocessing/FilmPass.js';
 
         document.addEventListener('DOMContentLoaded', () => {
-            // --- DATA ---
             const DATA = {
                 subjects: [
                     {id:'slehac',name:'Šlehař Delta-Piko',profile:'Původ: Uliční varna v Žižkově.<br>Schopnosti: Pozná feťáka na 200 metrů.<br>Slabiny: Bojí se holubů.',toastPhrases:['Čistota nad 80 %, leť.','Filtr čistý. Nezakecej.','Míchám to jak boží prst.','Teplota drží, nepřepal.','Vzorek stabilní. Plynule.'],logPhrases:['Vařím dávku, drž se','Šlehám vrstvičku I','Dealer hlásí, že zboží jede','Piko čistota 78 %, dobrý','Připravuju stříkačku','Váha ukazuje přesně.','Filtruju přes cigaretu.']},
@@ -208,78 +215,26 @@
 
             class InteractiveBackground {
                 constructor(container) {
-                    this.container = container;
-                    this.scene = new THREE.Scene();
-                    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-                    this.renderer = new THREE.WebGLRenderer({ canvas: this.container, alpha: true });
-                    this.composer = null;
-                    this.glitchPass = null;
-                    this.clock = new THREE.Clock();
-                    this.init();
+                    this.container = container; this.scene = new THREE.Scene(); this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000); this.renderer = new THREE.WebGLRenderer({ canvas: this.container, alpha: true }); this.composer = null; this.glitchPass = null; this.clock = new THREE.Clock(); this.init();
                 }
-
                 init() {
-                    this.renderer.setSize(window.innerWidth, window.innerHeight);
-                    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-                    this.camera.position.z = 5;
-                    this.scene.fog = new THREE.Fog(0x0a192f, 5, 15);
-                    
-                    // Post-processing pro "Bad Trip" efekt
-                    this.composer = new EffectComposer(this.renderer);
-                    this.composer.addPass(new RenderPass(this.scene, this.camera));
-
-                    this.glitchPass = new GlitchPass();
-                    this.glitchPass.enabled = false;
-                    this.composer.addPass(this.glitchPass);
-
-                    const filmPass = new FilmPass(0.35, 0.025, 648, false);
-                    this.composer.addPass(filmPass);
-
-                    // Přidání "špinavých" částic
-                    const particleCount = 1000;
-                    const positions = new Float32Array(particleCount * 3);
-                    for (let i = 0; i < particleCount * 3; i++) {
-                        positions[i] = (Math.random() - 0.5) * 20;
-                    }
-                    const particlesGeometry = new THREE.BufferGeometry();
-                    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-                    const particlesMaterial = new THREE.PointsMaterial({
-                        size: 0.02,
-                        color: 0x475569, // Šedá barva prachu
-                        transparent: true,
-                        opacity: 0.5
-                    });
-                    const dust = new THREE.Points(particlesGeometry, particlesMaterial);
-                    this.scene.add(dust);
-
-                    window.addEventListener('resize', this.onWindowResize.bind(this));
-                    this.animate();
+                    this.renderer.setSize(window.innerWidth, window.innerHeight); this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); this.camera.position.z = 5; this.scene.fog = new THREE.Fog(0x0a192f, 5, 15); this.composer = new EffectComposer(this.renderer); this.composer.addPass(new RenderPass(this.scene, this.camera)); this.glitchPass = new GlitchPass(); this.glitchPass.enabled = false; this.composer.addPass(this.glitchPass); const filmPass = new FilmPass(0.35, 0.025, 648, false); this.composer.addPass(filmPass); const particleCount = 1000; const positions = new Float32Array(particleCount * 3); for (let i = 0; i < particleCount * 3; i++) { positions[i] = (Math.random() - 0.5) * 20; } const particlesGeometry = new THREE.BufferGeometry(); particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3)); const particlesMaterial = new THREE.PointsMaterial({ size: 0.02, color: 0x475569, transparent: true, opacity: 0.5 }); const dust = new THREE.Points(particlesGeometry, particlesMaterial); this.scene.add(dust); window.addEventListener('resize', this.onWindowResize.bind(this)); this.animate();
                 }
-
                 onWindowResize() {
-                    this.camera.aspect = window.innerWidth / window.innerHeight;
-                    this.camera.updateProjectionMatrix();
-                    this.renderer.setSize(window.innerWidth, window.innerHeight);
-                    this.composer.setSize(window.innerWidth, window.innerHeight);
+                    this.camera.aspect = window.innerWidth / window.innerHeight; this.camera.updateProjectionMatrix(); this.renderer.setSize(window.innerWidth, window.innerHeight); this.composer.setSize(window.innerWidth, window.innerHeight);
                 }
-
                 triggerGlitch(duration = 500) {
-                    this.glitchPass.enabled = true;
-                    setTimeout(() => {
-                        this.glitchPass.enabled = false;
-                    }, duration);
+                    this.glitchPass.enabled = true; setTimeout(() => { this.glitchPass.enabled = false; }, duration);
                 }
-                
                 animate() {
-                    requestAnimationFrame(this.animate.bind(this));
-                    this.composer.render(this.clock.getDelta());
+                    requestAnimationFrame(this.animate.bind(this)); this.composer.render(this.clock.getDelta());
                 }
             }
             
             class SmazakGame {
                 constructor() {
                     this.state = { gameState: 'MENU', isScanning: false, threatIndex: 0, currentSubject: null, timers: { threat: null, scanStep: null, paranoia: null }, lab: { components: 0, upgrades: JSON.parse(localStorage.getItem('smazakUpgrades')) || DATA.labUpgrades }, varna: { active: false, step: 0, purity: 100, animationFrame: null, position: 0, speed: 1, direction: 1 } };
-                    this.elements = { stage: document.getElementById('stage'), scenes: { game: document.getElementById('scene-game'), menu: document.getElementById('scene-menu'), varna: document.getElementById('scene-varna'), upgrades: document.getElementById('scene-upgrades') }, overlay: document.getElementById('overlay'), buttons: { play: document.getElementById('play-button'), scan: document.getElementById('scan-button'), back: document.getElementById('back-button'), varnaIcon: document.getElementById('varna-icon-button'), varnaAction: document.getElementById('varna-action-button'), varnaBack: document.getElementById('varna-back-button'), upgrades: document.getElementById('upgrades-button'), upgradesBack: document.getElementById('upgrades-back-button') }, hud: { status: document.getElementById('hud-status'), subtext: document.getElementById('hud-subtext'), bpm: document.getElementById('stat-bpm'), bpmPill: document.getElementById('stat-bpm-pill'), risk: document.getElementById('stat-risk'), threatGauge: document.getElementById('threat-gauge-fill') }, scanner: document.getElementById('scanner'), toastContainer: document.getElementById('toast-container'), overlayElements: { title: document.getElementById('overlay-title'), content: document.getElementById('overlay-content') }, subjectCard: { container: document.getElementById('subject-card'), name: document.getElementById('subject-card-name') }, paranoiaTicker: document.getElementById('paranoia-ticker'), varna: { instruction: document.getElementById('varna-instruction'), purityLabel: document.getElementById('varna-purity-label'), purityFill: document.getElementById('varna-purity-fill'), timingBar: document.getElementById('varna-timing-bar'), target: document.querySelector('#varna-timing-bar .timing-bar-target'), marker: document.querySelector('#varna-timing-bar .timing-bar-marker') }, upgrades: { list: document.getElementById('upgrades-list'), componentsLabel: document.getElementById('components-label') } };
+                    this.elements = { stage: document.getElementById('stage'), scenes: { game: document.getElementById('scene-game'), menu: document.getElementById('scene-menu'), varna: document.getElementById('scene-varna'), upgrades: document.getElementById('scene-upgrades') }, overlay: document.getElementById('overlay'), buttons: { play: document.getElementById('play-button'), scan: document.getElementById('scan-button'), back: document.getElementById('back-button'), varnaIcon: document.getElementById('varna-icon-button'), varnaAction: document.getElementById('varna-action-button'), varnaBack: document.getElementById('varna-back-button'), upgrades: document.getElementById('upgrades-button'), upgradesBack: document.getElementById('upgrades-back-button') }, hud: { status: document.getElementById('hud-status'), subtext: document.getElementById('hud-subtext'), bpm: document.getElementById('stat-bpm'), bpmPill: document.getElementById('stat-bpm-pill'), risk: document.getElementById('stat-risk'), threatGauge: document.getElementById('threat-gauge-fill') }, scanner: document.getElementById('scanner'), toastContainer: document.getElementById('toast-container'), varnaToastContainer: document.getElementById('varna-toast'), overlayElements: { title: document.getElementById('overlay-title'), content: document.getElementById('overlay-content') }, subjectCard: { container: document.getElementById('subject-card'), name: document.getElementById('subject-card-name') }, paranoiaTicker: document.getElementById('paranoia-ticker'), varna: { instruction: document.getElementById('varna-instruction'), purityLabel: document.getElementById('varna-purity-label'), purityFill: document.getElementById('varna-purity-fill'), timingBar: document.getElementById('varna-timing-bar'), target: document.querySelector('#varna-timing-bar .timing-bar-target'), marker: document.querySelector('#varna-timing-bar .timing-bar-marker') }, upgrades: { list: document.getElementById('upgrades-list'), componentsLabel: document.getElementById('components-label') } };
                     this.background = new InteractiveBackground(document.getElementById('webgl-canvas'));
                     this.init();
                 }
@@ -311,6 +266,8 @@
                     this.state.gameState = newState;
                     Object.values(this.elements.scenes).forEach(s => s.classList.add('hidden'));
                     this.elements.overlay.classList.add('hidden');
+                    // Hide/show main toast container based on scene
+                    this.elements.toastContainer.classList.toggle('hidden', newState === 'VARNA');
                     switch (newState) {
                         case 'MENU': this.elements.scenes.menu.classList.remove('hidden'); this.stopThreatTimer(); this.stopParanoiaTicker(); break;
                         case 'PLAYING': this.elements.scenes.game.classList.remove('hidden'); this.startThreatTimer(); break;
@@ -369,15 +326,42 @@
                 updateStats() { const bpm = this.randomInt(70, 180); this.elements.hud.bpm.textContent = bpm; this.elements.hud.risk.textContent = `${this.randomInt(10, 95)}%`; [this.elements.hud.bpmPill, this.elements.hud.risk.parentElement].forEach(el => { el.classList.add('highlight'); setTimeout(() => el.classList.remove('highlight'), 500); }); this.checkParanoia(bpm); }
                 setHUD(status, subtext, buttonText) { this.elements.hud.status.textContent = status; this.elements.hud.subtext.textContent = subtext; this.elements.buttons.scan.textContent = buttonText; }
                 
-                toast(message) { 
-                    if (this.elements.toastContainer.children.length >= 4) this.elements.toastContainer.lastElementChild.remove();
+                toast(message) {
+                    const container = this.elements.toastContainer;
+                    if (container.children.length >= 5) {
+                        const oldestToast = container.lastElementChild;
+                        oldestToast.classList.add('toast-exiting');
+                        oldestToast.addEventListener('transitionend', () => oldestToast.remove());
+                    }
+
                     const toastEl = document.createElement('div');
-                    toastEl.className = 'toast';
+                    toastEl.className = 'toast toast-entering';
                     toastEl.textContent = message;
-                    this.elements.toastContainer.prepend(toastEl);
-                    setTimeout(() => toastEl.remove(), 5000);
+                    container.prepend(toastEl);
+                    
+                    requestAnimationFrame(() => {
+                        toastEl.classList.remove('toast-entering');
+                    });
                 }
                 
+                varnaToast(message, type) {
+                    const container = this.elements.varnaToastContainer;
+                    container.innerHTML = ''; // Clear previous toast
+                    const toastEl = document.createElement('div');
+                    toastEl.className = `varna-toast-message ${type}`;
+                    toastEl.textContent = message;
+                    container.appendChild(toastEl);
+
+                    requestAnimationFrame(() => {
+                        toastEl.classList.add('visible');
+                    });
+
+                    setTimeout(() => {
+                        toastEl.classList.remove('visible');
+                        toastEl.addEventListener('transitionend', () => toastEl.remove());
+                    }, 1500);
+                }
+
                 checkParanoia(bpm) { if (bpm > 120) { this.startParanoiaTicker(bpm); } else { this.stopParanoiaTicker(); } }
                 startParanoiaTicker(bpm) {
                     if (this.state.timers.paranoia) return;
@@ -428,11 +412,11 @@
                     }
                 }
 
-                startVarnaMinigame() { this.state.varna = { ...this.state.varna, active: true, step: 0, purity: 100 }; this.elements.varna.purityFill.style.width = '100%'; this.elements.varna.purityLabel.textContent = '100%'; this.elements.buttons.varnaAction.textContent = 'START'; this.elements.buttons.varnaAction.classList.remove('hidden'); this.elements.buttons.varnaAction.onclick = () => this.handleVarnaClick(); this.elements.varna.instruction.textContent = 'Připrav se na vaření...'; this.setGameState('VARNA'); }
+                startVarnaMinigame() { this.state.varna = { ...this.state.varna, active: true, step: 0, purity: 100 }; this.elements.varna.purityFill.style.width = '100%'; this.elements.varna.purityLabel.textContent = '100%'; this.elements.buttons.varnaAction.textContent = 'START'; this.elements.buttons.varnaAction.onclick = () => this.handleVarnaClick(); this.elements.varna.instruction.textContent = 'Připrav se na vaření...'; this.setGameState('VARNA'); }
                 handleVarnaClick() { const button = this.elements.buttons.varnaAction; if (button.textContent === 'START') { this.runVarnaStep(); } else if (this.state.varna.active) { this.stopVarnaTimingBar(true); } }
                 runVarnaStep() { const { step } = this.state.varna; if (step >= DATA.cookSteps.length) { this.endVarnaMinigame(); return; } const currentStep = DATA.cookSteps[step]; this.elements.varna.instruction.textContent = currentStep.instruction; this.elements.buttons.varnaAction.textContent = 'ZASTAVIT'; this.startVarnaTimingBar(currentStep); }
                 startVarnaTimingBar(stepConfig) { this.state.varna.position = 0; this.state.varna.direction = 1; this.state.varna.speed = stepConfig.speed; let targetWidth = stepConfig.targetWidth; if (this.state.lab.upgrades.cooker.unlocked) targetWidth += 10; const targetStart = this.randomInt(0, 100 - targetWidth); this.elements.varna.target.style.left = `${targetStart}%`; this.elements.varna.target.style.width = `${targetWidth}%`; const gameLoop = () => { let { position, speed, direction } = this.state.varna; position += speed * direction; if (position > 100 || position < 0) { direction *= -1; position = Math.max(0, Math.min(100, position)); } this.elements.varna.marker.style.left = `${position}%`; this.state.varna.position = position; this.state.varna.direction = direction; this.state.varna.animationFrame = requestAnimationFrame(gameLoop); }; gameLoop(); }
-                stopVarnaTimingBar(playerAction) { if (!this.state.varna.active) return; cancelAnimationFrame(this.state.varna.animationFrame); if (playerAction) { const markerPos = this.state.varna.position; const targetStart = parseFloat(this.elements.varna.target.style.left); const targetEnd = targetStart + parseFloat(this.elements.varna.target.style.width); const success = markerPos >= targetStart && markerPos <= targetEnd; let purityChange = 0; if (success) { purityChange = 5; this.toast('Perfektní!'); } else { purityChange = -15; this.toast('Zkaženo!'); } this.state.varna.purity = Math.max(0, this.state.varna.purity + purityChange); this.elements.varna.purityFill.style.width = `${this.state.varna.purity}%`; this.elements.varna.purityLabel.textContent = `${this.state.varna.purity}%`; } this.state.varna.step++; setTimeout(() => this.runVarnaStep(), 1000); }
+                stopVarnaTimingBar(playerAction) { if (!this.state.varna.active) return; cancelAnimationFrame(this.state.varna.animationFrame); if (playerAction) { const markerPos = this.state.varna.position; const targetStart = parseFloat(this.elements.varna.target.style.left); const targetEnd = targetStart + parseFloat(this.elements.varna.target.style.width); const success = markerPos >= targetStart && markerPos <= targetEnd; let purityChange = 0; if (success) { purityChange = 5; this.varnaToast('Perfektní!', 'success'); } else { purityChange = -15; this.varnaToast('Zkaženo!', 'fail'); } this.state.varna.purity = Math.max(0, this.state.varna.purity + purityChange); this.elements.varna.purityFill.style.width = `${this.state.varna.purity}%`; this.elements.varna.purityLabel.textContent = `${this.state.varna.purity}%`; } this.state.varna.step++; setTimeout(() => this.runVarnaStep(), 1000); }
                 endVarnaMinigame() { this.state.varna.active = false; const finalPurity = this.state.varna.purity; let resultText = `Vaření dokončeno! Čistota: ${finalPurity}%. `; let componentsGained = 0; if (finalPurity >= 95) { resultText += 'Mistrovské dílo! +3 součástky.'; componentsGained = 3; } else if (finalPurity >= 75) { resultText += 'Dobrý matroš. +2 součástky.'; componentsGained = 2; } else if (finalPurity > 0) { resultText += 'Je to kouřitelný. +1 součástka.'; componentsGained = 1; } else { resultText += 'Totálně spáleno. Nic.'; } this.state.lab.components += componentsGained; this.saveState(); this.elements.varna.instruction.textContent = resultText; this.elements.buttons.varnaAction.textContent = 'DOKONČIT'; this.elements.buttons.varnaAction.onclick = () => this.setGameState('PLAYING'); }
             }
 
