@@ -3,108 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Najdi smažák v4.0</title>
+    <title>Najdi smažák v7.0 - Paranoia</title>
     
-    <!-- PWA Icon and Manifest Generator -->
+    <!-- PWA Icon and Manifest Generator - NOVÁ IKONA SÁČKU -->
     <script>
         (function() {
-            if (CanvasRenderingContext2D.prototype.roundRect === undefined) {
-                CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) { this.beginPath(); this.moveTo(x + r, y); this.lineTo(x + w - r, y); this.quadraticCurveTo(x + w, y, x + w, y + r); this.lineTo(x + w, y + h - r); this.quadraticCurveTo(x + w, y + h, x + w - r, y + h); this.lineTo(x + r, y + h); this.quadraticCurveTo(x, y + h, x, y + h - r); this.lineTo(x, y + r); this.quadraticCurveTo(x, y, x + r, y); this.closePath(); };
-            }
             function drawIcon(size) {
-                const canvas = document.createElement('canvas'); canvas.width = size; canvas.height = size; const ctx = canvas.getContext('2d'); const scale = size / 512; ctx.fillStyle = '#0a192f'; ctx.fillRect(0, 0, size, size); ctx.translate(size / 2, size / 2); ctx.rotate(-45 * Math.PI / 180); const bodyWidth = 60 * scale, bodyHeight = 250 * scale; const bodyX = -bodyWidth / 2, bodyY = -bodyHeight / 2; ctx.fillStyle = '#e2e8f0'; ctx.strokeStyle = '#4a5568'; ctx.lineWidth = 8 * scale; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.roundRect(bodyX, bodyY, bodyWidth, bodyHeight, 15 * scale); ctx.stroke(); ctx.fill(); const liquidGradient = ctx.createLinearGradient(bodyX, bodyY, bodyX, bodyY + bodyHeight); liquidGradient.addColorStop(0, '#00f6ff'); liquidGradient.addColorStop(1, '#00b8d4'); ctx.fillStyle = liquidGradient; ctx.beginPath(); ctx.roundRect(bodyX + 5 * scale, bodyY + 100 * scale, bodyWidth - 10 * scale, bodyHeight - 105 * scale, 10 * scale); ctx.fill(); const plungerY = bodyY - 100 * scale; ctx.fillStyle = '#718096'; ctx.strokeStyle = '#2d3748'; ctx.lineWidth = 4 * scale; ctx.beginPath(); ctx.roundRect(bodyX - 20 * scale, plungerY - 30 * scale, bodyWidth + 40 * scale, 30 * scale, 10 * scale); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.fillRect(bodyX + (bodyWidth / 2) - 5 * scale, plungerY, 10 * scale, 100 * scale); const needleBaseY = bodyY + bodyHeight; ctx.fillStyle = '#c0c0c0'; ctx.strokeStyle = '#718096'; ctx.lineWidth = 2 * scale; ctx.beginPath(); ctx.fillRect(bodyX + 10 * scale, needleBaseY, bodyWidth - 20 * scale, 20 * scale); ctx.beginPath(); ctx.moveTo(0, needleBaseY + 20 * scale); ctx.lineTo(0, needleBaseY + 140 * scale); ctx.strokeStyle = '#c0c0c0'; ctx.lineWidth = 6 * scale; ctx.stroke(); return canvas.toDataURL('image/png');
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                const scale = size / 512;
+
+                // Background
+                ctx.fillStyle = '#0a192f';
+                ctx.fillRect(0, 0, size, size);
+
+                ctx.save();
+                ctx.translate(size / 2, size / 2);
+                
+                // Baggie shape
+                const bagWidth = 280 * scale;
+                const bagHeight = 320 * scale;
+                ctx.beginPath();
+                ctx.moveTo(-bagWidth / 2, -bagHeight / 2 + 50 * scale);
+                ctx.lineTo(-bagWidth / 2, bagHeight / 2);
+                ctx.quadraticCurveTo(0, bagHeight / 2 + 40 * scale, bagWidth / 2, bagHeight / 2);
+                ctx.lineTo(bagWidth / 2, -bagHeight / 2 + 50 * scale);
+                ctx.closePath();
+
+                // Fill with slight transparency
+                ctx.fillStyle = 'rgba(230, 240, 255, 0.15)';
+                ctx.strokeStyle = 'rgba(150, 180, 220, 0.4)';
+                ctx.lineWidth = 6 * scale;
+                ctx.fill();
+                ctx.stroke();
+
+                // Powder inside
+                ctx.beginPath();
+                ctx.moveTo(-bagWidth / 2 * 0.8, bagHeight / 2);
+                ctx.quadraticCurveTo(-bagWidth / 2 * 0.5, bagHeight / 2 - 100 * scale, 0, bagHeight / 2 - 50 * scale);
+                ctx.quadraticCurveTo(bagWidth / 2 * 0.5, bagHeight / 2 - 100 * scale, bagWidth / 2 * 0.8, bagHeight / 2);
+                ctx.closePath();
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.shadowColor = 'rgba(255, 255, 255, 0.7)';
+                ctx.shadowBlur = 20 * scale;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+
+                // Seal
+                ctx.fillStyle = 'rgba(20, 30, 50, 0.5)';
+                ctx.fillRect(-bagWidth/2 - 10*scale, -bagHeight/2 + 40*scale, bagWidth + 20*scale, 20*scale);
+                ctx.strokeStyle = 'rgba(150, 180, 220, 0.6)';
+                ctx.strokeRect(-bagWidth/2 - 10*scale, -bagHeight/2 + 40*scale, bagWidth + 20*scale, 20*scale);
+
+
+                // Tie
+                ctx.beginPath();
+                ctx.moveTo(-40 * scale, -bagHeight / 2 + 40 * scale);
+                ctx.quadraticCurveTo(0, -bagHeight/2 - 30 * scale, 40 * scale, -bagHeight/2 + 40 * scale);
+                ctx.strokeStyle = '#facc15';
+                ctx.lineWidth = 10 * scale;
+                ctx.stroke();
+
+                ctx.restore();
+                return canvas.toDataURL('image/png');
             }
-            const icon192 = drawIcon(192), icon512 = drawIcon(512), favicon = drawIcon(32), themeColor = '#0a192f'; const manifest = { name: "Najdi smažák v4.0", short_name: "Smažák", start_url: ".", display: "standalone", background_color: themeColor, theme_color: themeColor, icons: [{ src: icon192, type: "image/png", sizes: "192x192" }, { src: icon512, type: "image/png", sizes: "512x512" }] }; const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' }); const manifestURL = URL.createObjectURL(blob); document.head.insertAdjacentHTML('beforeend', `<link rel="icon" href="${favicon}"><link rel="apple-touch-icon" href="${icon192}"><link rel="manifest" href="${manifestURL}"><meta name="theme-color" content="${themeColor}"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">`);
+            const icon192 = drawIcon(192), icon512 = drawIcon(512), favicon = drawIcon(32), themeColor = '#0a192f'; const manifest = { name: "Najdi smažák v7.0", short_name: "Smažák", start_url: ".", display: "standalone", background_color: themeColor, theme_color: themeColor, icons: [{ src: icon192, type: "image/png", sizes: "192x192" }, { src: icon512, type: "image/png", sizes: "512x512" }] }; const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' }); const manifestURL = URL.createObjectURL(blob); document.head.insertAdjacentHTML('beforeend', `<link rel="icon" href="${favicon}"><link rel="apple-touch-icon" href="${icon192}"><link rel="manifest" href="${manifestURL}"><meta name="theme-color" content="${themeColor}"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">`);
         })();
     </script>
 
-    <!-- Libraries: Three.js for WebGL -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
-    <!-- Tailwind CSS & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     
-    <!-- Inline Styles -->
     <style>
         :root {
-            --bg-color: #0a192f;
-            --accent-cyan: #00f6ff; --accent-purple: #a855f7; --accent-yellow: #facc15;
-            --accent-red: #f87171; --accent-green: #4ade80;
-            --text-primary: #e2e8f0; --text-secondary: #94a3b8;
+            --bg-color: #0a192f; --accent-cyan: #00f6ff; --accent-purple: #a855f7; --accent-yellow: #facc15;
+            --accent-red: #f87171; --accent-green: #4ade80; --text-primary: #e2e8f0; --text-secondary: #94a3b8;
             --glass-bg: rgba(28, 37, 61, 0.5); --glass-border: rgba(100, 116, 139, 0.2);
             --glow-cyan: rgba(0, 246, 255, 0.4); --glow-purple: rgba(168, 85, 247, 0.45);
             --safe-area-top: env(safe-area-inset-top, 0px); --safe-area-bottom: env(safe-area-inset-bottom, 0px);
             --safe-area-left: env(safe-area-inset-left, 0px); --safe-area-right: env(safe-area-inset-right, 0px);
         }
-        html, body {
-            margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; touch-action: none; -webkit-tap-highlight-color: transparent;
-            background-color: var(--bg-color); color: var(--text-primary);
-            font-family: 'Share Tech Mono', monospace;
-        }
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; touch-action: none; -webkit-tap-highlight-color: transparent; background-color: var(--bg-color); color: var(--text-primary); font-family: 'Share Tech Mono', monospace; }
         #webgl-canvas { position: fixed; top: 0; left: 0; z-index: 0; }
-        #root {
-            position: fixed; inset: 0; z-index: 1;
-            display: flex; align-items: center; justify-content: center;
-        }
-        #stage {
-            position: relative; width: 360px; height: 640px;
-            transform-origin: center center; overflow: hidden;
-            display: flex; flex-direction: column;
-            padding: var(--safe-area-top) var(--safe-area-right) var(--safe-area-bottom) var(--safe-area-left);
-        }
-        /* CRT / Scanlines Effect */
-        #stage::after {
-            content: ''; position: absolute; inset: 0; z-index: 100;
-            pointer-events: none;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 4px, 3px 100%;
-            animation: flicker 0.15s infinite;
-        }
+        #root { position: fixed; inset: 0; z-index: 1; display: flex; align-items: center; justify-content: center; }
+        #stage { position: relative; width: 360px; height: 640px; transform-origin: center center; overflow: hidden; display: flex; flex-direction: column; padding: var(--safe-area-top) var(--safe-area-right) var(--safe-area-bottom) var(--safe-area-left); }
+        #stage::after { content: ''; position: absolute; inset: 0; z-index: 100; pointer-events: none; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 4px, 3px 100%; animation: flicker 0.15s infinite; }
         @keyframes flicker { 0% { opacity: 0.2; } 20% { opacity: 0.8; } 40% { opacity: 0.3; } 60% { opacity: 0.9; } 80% { opacity: 0.2; } 100% { opacity: 0.8; } }
-        
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
         .hidden { display: none !important; }
-
         .scene, .overlay { position: absolute; inset: 0; display: flex; flex-direction: column; }
         .overlay { background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 50; }
-        
         #hud { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 12px; z-index: 10; gap: 8px; }
         .threat-gauge { background: var(--glass-bg); border: 1px solid var(--glass-border); height: 12px; border-radius: 99px; padding: 2px; }
         .threat-gauge > i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent-green), var(--accent-yellow), var(--accent-red)); background-size: 400% 100%; transition: width 0.5s cubic-bezier(0.25, 1, 0.5, 1); will-change: width; }
         .hud-status { text-shadow: 0 0 10px var(--glow-cyan); }
         .hud-pill { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 4px 8px; border-radius: 99px; font-size: 12px; text-shadow: 0 0 5px var(--glow-cyan); transition: text-shadow 0.3s, color 0.3s; }
         .hud-pill.highlight { color: var(--accent-yellow); text-shadow: 0 0 10px var(--accent-yellow); }
-        #pause-button { background: transparent; border: none; font-size: 24px; padding: 4px; }
-
+        #stat-bpm-pill { cursor: pointer; user-select: none; }
         #scanner { position: relative; width: 280px; height: 280px; border-radius: 999px; margin: auto; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(0, 246, 255, 0.2); box-shadow: 0 0 30px var(--glow-cyan) inset; }
         .scanner-ring { position: absolute; inset: -10px; border: 2px dashed var(--accent-cyan); border-radius: 999px; opacity: 0.5; animation: rotate 30s linear infinite; will-change: transform; }
         .scanner-line { position: absolute; left: 5%; width: 90%; height: 2px; background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent); box-shadow: 0 0 10px 2px var(--glow-cyan); animation: scan 4s ease-in-out infinite; will-change: top; }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes scan { 0%, 100% { top: 10%; } 50% { top: 90%; } }
-        
         #actions { padding: 20px; z-index: 10; }
         .btn { font-family: 'Orbitron', sans-serif; font-weight: 700; padding: 16px; border-radius: 16px; border: none; color: black; text-transform: uppercase; letter-spacing: 1px; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); box-shadow: 0 0 20px 2px var(--glow-cyan); transition: transform 0.1s ease, box-shadow 0.2s ease; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
         .btn:hover:not(:disabled) { box-shadow: 0 0 30px 5px var(--glow-purple); }
         .btn:active:not(:disabled) { transform: scale(0.97); }
         .btn:disabled { filter: grayscale(80%); opacity: 0.6; cursor: not-allowed; }
-
-        #toast-container { position: absolute; bottom: 100px; left: 20px; display: flex; flex-direction: column-reverse; gap: 8px; z-index: 40; pointer-events: none; }
+        #toast-container { position: absolute; bottom: 100px; left: 20px; right: 20px; display: flex; flex-direction: column-reverse; gap: 8px; z-index: 40; pointer-events: none; }
         .toast { background: var(--glass-bg); backdrop-filter: blur(10px); padding: 8px 12px; border-radius: 12px; font-size: 12px; border: 1px solid var(--glass-border); animation: toast-in 0.3s ease-out, toast-out 0.3s ease-in 2.7s; opacity: 0; }
+        .toast.paranoia-mild { border-color: var(--accent-yellow); color: var(--accent-yellow); }
+        .toast.paranoia-alert { border-color: var(--accent-red); color: var(--accent-red); font-weight: bold; }
+        .toast.paranoia-critical { border-color: var(--accent-purple); color: var(--accent-purple); font-weight: bold; animation: toast-in 0.2s, toast-out 0.2s 3.8s, screen-shake 0.5s; }
         @keyframes toast-in { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes toast-out { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-20px); } }
-
         .panel { margin: auto; width: 85%; background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 24px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); padding: 24px; text-align: center; }
         .panel-content { max-height: 250px; overflow-y: auto; text-align: left; }
-
-        /* Scan Activation Effect */
+        .upgrade-item { padding: 8px; border: 1px solid var(--glass-border); border-radius: 8px; margin-bottom: 8px; }
+        .upgrade-item.unlocked { border-color: var(--accent-green); background-color: rgba(74, 222, 128, 0.1); }
+        .upgrade-item h4 { color: var(--accent-yellow); }
         .scan-active { animation: screen-shake 0.5s, chromatic-aberration 0.5s; }
         @keyframes screen-shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); } 20%, 40%, 60%, 80% { transform: translateX(2px); } }
         @keyframes chromatic-aberration { 0%, 100% { text-shadow: none; filter: none; } 50% { text-shadow: 2px 2px 0 var(--accent-red), -2px -2px 0 var(--accent-cyan); filter: blur(0.5px); } }
+        
+        #subject-card {
+            position: absolute; top: 70px; left: 15px; z-index: 20;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            padding: 8px 12px; border-radius: 12px; backdrop-filter: blur(5px);
+            cursor: pointer; transition: all 0.2s ease;
+            transform: translateX(-150%);
+        }
+        #subject-card.visible { transform: translateX(0); }
+        #subject-card:hover { border-color: var(--accent-cyan); box-shadow: 0 0 15px var(--glow-cyan); }
+        #subject-card-name { font-family: 'Orbitron', sans-serif; font-weight: 700; color: var(--accent-yellow); }
+        #subject-card-sub { font-size: 10px; color: var(--text-secondary); }
 
+        #minigame-container {
+            position: absolute; top: 12px; right: 12px; z-index: 20;
+            width: 80px; height: 80px;
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            border-radius: 12px; padding: 8px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        #minigame-container.visible { opacity: 1; pointer-events: auto; }
+        #minigame-bar { position: relative; width: 100%; height: 10px; background-color: #1e293b; border-radius: 5px; overflow: hidden; }
+        #minigame-target { position: absolute; top: 0; height: 100%; background-color: rgba(74, 222, 128, 0.5); }
+        #minigame-marker { position: absolute; top: 0; height: 100%; width: 4px; background-color: var(--accent-cyan); box-shadow: 0 0 5px var(--accent-cyan); }
+        
         @media (prefers-reduced-motion: reduce) {
             .scanner-ring, .scanner-line, #stage::after, .scan-active { animation: none; }
             .toast { animation: none; opacity: 1; }
@@ -117,31 +167,74 @@
     <div id="root" role="application">
         <div id="stage">
             <div id="scene-game" class="scene hidden">
-                <header id="hud" aria-label="Herní statistiky"><div class="threat-gauge"><i id="threat-gauge-fill"></i></div><div class="text-center"><div id="hud-status" class="font-orbitron font-bold text-lg text-cyan-300 hud-status" aria-live="polite"></div><div id="hud-subtext" class="text-xs text-slate-400"></div></div><div class="flex items-center justify-end gap-2"><div class="hud-pill">BPM <b id="stat-bpm"></b></div><div class="hud-pill">RISK <b id="stat-risk"></b></div><button id="pause-button" aria-label="Pauza">⏸</button></div></header>
-                <main class="flex-1 flex items-center justify-center"><div id="scanner" role="button" aria-label="Skenovací oblast"><div class="scanner-ring"></div><div class="scanner-line"></div><div class="font-orbitron text-2xl font-black text-cyan-300 text-center" style="text-shadow: 0 0 15px var(--glow-cyan);">NAJDI<br>SMAŽÁK</div></div></main>
+                <header id="hud" aria-label="Herní statistiky">
+                    <div class="threat-gauge"><i id="threat-gauge-fill"></i></div>
+                    <div class="text-center">
+                        <div id="hud-status" class="font-orbitron font-bold text-lg text-cyan-300 hud-status" aria-live="polite"></div>
+                        <div id="hud-subtext" class="text-xs text-slate-400"></div>
+                    </div>
+                    <div class="flex items-center justify-end gap-2">
+                        <div id="stat-bpm-pill" class="hud-pill">BPM <b id="stat-bpm"></b></div>
+                        <div class="hud-pill">RISK <b id="stat-risk"></b></div>
+                    </div>
+                </header>
+                
+                <main class="flex-1 flex items-center justify-center relative">
+                    <div id="subject-card"><div id="subject-card-name"></div><div id="subject-card-sub">Zobrazit kartu</div></div>
+                    <div id="minigame-container">
+                        <div class="text-xs text-cyan-300 mb-1">STABILIZUJ</div>
+                        <div id="minigame-bar">
+                            <div id="minigame-target"></div>
+                            <div id="minigame-marker"></div>
+                        </div>
+                    </div>
+                    <div id="scanner" role="button" aria-label="Skenovací oblast"><div class="scanner-ring"></div><div class="scanner-line"></div><div class="font-orbitron text-2xl font-black text-cyan-300 text-center" style="text-shadow: 0 0 15px var(--glow-cyan);">NAJDI<br>SMAŽÁK</div></div>
+                </main>
+
                 <footer id="actions"><button id="scan-button" class="btn w-full"></button></footer>
             </div>
-            <div id="scene-menu" class="scene items-center justify-center"><div class="panel"><h1 class="font-orbitron text-4xl font-black text-cyan-300 mb-2" style="text-shadow: 0 0 15px var(--glow-cyan);">NAJDI SMAŽÁK</h1><p class="text-slate-400 mb-6">verze 4.0</p><button id="play-button" class="btn w-full">HRÁT</button></div></div>
-            <div id="overlay-pause" class="overlay hidden items-center justify-center" role="dialog" aria-modal="true"><div class="panel"><h2 id="overlay-title" class="font-orbitron text-2xl font-bold text-cyan-300 mb-4"></h2><div id="overlay-content" class="panel-content text-slate-300 mb-6"></div><div class="flex flex-col gap-3"><button id="resume-button" class="btn w-full"></button><button id="profile-button" class="btn w-full bg-yellow-400/90" style="box-shadow: 0 0 20px rgba(250, 204, 21, 0.45);"></button><button id="back-button" class="btn w-full bg-gray-500/80 hidden" style="box-shadow: none;"></button></div></div></div>
+            
+            <div id="scene-menu" class="scene items-center justify-center"><div class="panel"><h1 class="font-orbitron text-4xl font-black text-cyan-300 mb-2" style="text-shadow: 0 0 15px var(--glow-cyan);">NAJDI SMAŽÁK</h1><p class="text-slate-400 mb-6">v7.0 - Paranoia</p><button id="play-button" class="btn w-full">HRÁT</button></div></div>
+            
+            <div id="overlay" class="overlay hidden items-center justify-center" role="dialog" aria-modal="true"><div class="panel"><h2 id="overlay-title" class="font-orbitron text-2xl font-bold text-cyan-300 mb-4"></h2><div id="overlay-content" class="panel-content text-slate-300 mb-6"></div><div class="flex flex-col gap-3"><button id="varna-button" class="btn w-full bg-purple-500/90" style="box-shadow: 0 0 20px var(--glow-purple);"></button><button id="back-button" class="btn w-full bg-gray-500/80" style="box-shadow: none;"></button></div></div></div>
+            
             <div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- CONSTANTS & DATA ---
-            const DATA = { subjects: [{id:'slehac',name:'Šlehař Delta-Piko',profile:'Původ: Uliční varna v Žižkově.<br>Schopnosti: Pozná feťáka na 200 metrů.<br>Slabiny: Bojí se holubů.',toastPhrases:['Čistota nad 80 %, leť.','Filtr čistý. Nezakecej.','Míchám to jak boží prst.','Teplota drží, nepřepal.','Vzorek stabilní. Plynule.'],logPhrases:['Vařím dávku, drž se','Šlehám vrstvičku I','Dealer hlásí, že zboží jede','Piko čistota 78 %, dobrý','Připravuju stříkačku','Váha ukazuje přesně.','Filtruju přes cigaretu.']},{id:'hulic',name:'Hulič Zubatá Žárovka',profile:'Původ: Skleník za panelákem.<br>Schopnosti: Umí ubalit brko i poslepu.<br>Slabiny: Neustále se směje vlastním vtipům.',toastPhrases:['Táhne to. Drž linku.','Popel si sedá, klid.','Sklo čistý – respekt.','Seshni to na špičku.','Vlhkej kašel? Voda, kámo.'],logPhrases:['Přepaluju sklo','Už to bublá, kámo','Mám totální červený oči','Kde je zapalovač?','Tohle je silnej model','Mám vlčí hlad.','Kde mám drtičku?']},{id:'cichac',name:'Čichač Trubek Omega',profile:'Původ: Kanály pod hlavním nádražím.<br>Schopnosti: Pozná značku ředidla po čichu.<br>Slabiny: Často mluví s odpadkovými koši.',toastPhrases:['Hadr ready. Film běží.','Vdechni – nepřeháněj.','Profil drží, barvičky.','Víčko těsní, klídek.','Kanystr mlčí. Zatím.'],logPhrases:['Čichám toluen z hadru','Tohle lepidlo je top','Mozek mi odchází na výlet','Kde je ta igelitka?','Všechno se točí','Testuju novej druh ředidla.','Ten igeliťák už má díru.']},{id:'domingo',name:'Domingo ze Smíchova',profile:'Původ: Lavička na Andělu.<br>Schopnosti: Dokáže prodat cokoliv komukoliv. Kvalita zboží je... proměnlivá.<br>Slabiny: Občas má tak dobrej perník, že tě vystřelí z papučí.',toastPhrases:['Předávka v tichu.','Kamera za rohem – bacha.','Balíček nenápadnej.','Čas jsou prachy.','Stín mě kryje.'],logPhrases:['Mám čerstvej matroš, chceš?','Dneska akce, dva za cenu jednoho.','Bacha, za rohem stojej fízlové.','Platba jen v hotovosti, kámo.','Tohle je čistý, přísahám.','Nekoukej tak nápadně.']}], threatLevels: [{width:25},{width:50},{width:75},{width:100}], analysis: ["Vypadáš v klidu, ale nepodceňuj to. Dej si pauzu, napij se a neblbni.","Už to v sobě máš, kámo. Zpomal, nebo to přeženeš. Najez se a dej si studenou sprchu.","Jsi na šrot, kámo. Okamžitě přestaň. Sežeň někoho, kdo tě pohlídá, ať neuděláš blbost.","Totální overdose, vole! Jestli jsi sám, volej rychlou, nedělám si srandu. Tohle je o život."], scanStates: [{status:'KALIBRACE',subtext:'Míchám to s toluenem...'},{status:'SKENOVÁNÍ',subtext:'Zapalovač skoro hoří...'},{status:'ANALÝZA',subtext:'Dobrý matroš...'},{status:'HOTOVO',subtext:'Čistota 98%, kámo!'}] };
+            // --- DATA ---
+            const DATA = {
+                subjects: [
+                    {id:'slehac',name:'Šlehař Delta-Piko',profile:'Původ: Uliční varna v Žižkově.<br>Schopnosti: Pozná feťáka na 200 metrů.<br>Slabiny: Bojí se holubů.',toastPhrases:['Čistota nad 80 %, leť.','Filtr čistý. Nezakecej.','Míchám to jak boží prst.','Teplota drží, nepřepal.','Vzorek stabilní. Plynule.'],logPhrases:['Vařím dávku, drž se','Šlehám vrstvičku I','Dealer hlásí, že zboží jede','Piko čistota 78 %, dobrý','Připravuju stříkačku','Váha ukazuje přesně.','Filtruju přes cigaretu.']},
+                    {id:'hulic',name:'Hulič Zubatá Žárovka',profile:'Původ: Skleník za panelákem.<br>Schopnosti: Umí ubalit brko i poslepu.<br>Slabiny: Neustále se směje vlastním vtipům.',toastPhrases:['Táhne to. Drž linku.','Popel si sedá, klid.','Sklo čistý – respekt.','Seshni to na špičku.','Vlhkej kašel? Voda, kámo.'],logPhrases:['Přepaluju sklo','Už to bublá, kámo','Mám totální červený oči','Kde je zapalovač?','Tohle je silnej model','Mám vlčí hlad.','Kde mám drtičku?']},
+                    {id:'cichac',name:'Čichač Trubek Omega',profile:'Původ: Kanály pod hlavním nádražím.<br>Schopnosti: Pozná značku ředidla po čichu.<br>Slabiny: Často mluví s odpadkovými koši.',toastPhrases:['Hadr ready. Film běží.','Vdechni – nepřeháněj.','Profil drží, barvičky.','Víčko těsní, klídek.','Kanystr mlčí. Zatím.'],logPhrases:['Čichám toluen z hadru','Tohle lepidlo je top','Mozek mi odchází na výlet','Kde je ta igelitka?','Všechno se točí','Testuju novej druh ředidla.','Ten igeliťák už má díru.']},
+                    {id:'domingo',name:'Domingo ze Smíchova',profile:'Původ: Lavička na Andělu.<br>Schopnosti: Dokáže prodat cokoliv komukoliv. Kvalita zboží je... proměnlivá.<br>Slabiny: Občas má tak dobrej perník, že tě vystřelí z papučí.',toastPhrases:['Předávka v tichu.','Kamera za rohem – bacha.','Balíček nenápadnej.','Čas jsou prachy.','Stín mě kryje.'],logPhrases:['Mám čerstvej matroš, chceš?','Dneska akce, dva za cenu jednoho.','Bacha, za rohem stojej fízlové.','Platba jen v hotovosti, kámo.','Tohle je čistý, přísahám.','Nekoukej tak nápadně.']},
+                    {id:'klara',name:'Kyselina Klára',profile:'Původ: Nonstop mejdan v Crossu.<br>Schopnosti: Vidí zvuky a slyší barvy.<br>Slabiny: Občas se zasekne a 10 minut kouká na vlastní ruku.',toastPhrases:['Fraktály se sbíhají...','Stěny zase dýchají.','Vesmír mi něco šeptá.','Ten koberec se hýbe.','Čas je jen iluze, kámo.'],logPhrases:['Papír se rozpouští.','Už to najíždí.','Mluvil na mě automat na kafe.','Všechno je propojený.','Ztrácím se v hudbě.','Tohle je jinej level vědomí.']},
+                    {id:'nikotin',name:'Nádražák Nikotin',profile:'Původ: Lavička před Hlavákem.<br>Schopnosti: Dokáže vyžebrat dvacku i od sochy.<br>Slabiny: Bez cigarety má absťák a třesou se mu ruce.',toastPhrases:['Nemáš oheň?','Hele, dvacku... na vlak.','Už se mi klepou ruce.','Potřebuju nutně cígo.','Jen jedno práska...'],logPhrases:['Dneska ještě ani čára.','Kde seženu prachy?','Ten absťák mě zabije.','Potřebuju dávku, hned.','Všechno mě svrbí.','Třesu se jak ratlík.']}
+                ],
+                threatLevels: [{width:25},{width:50},{width:75},{width:100}],
+                scanStates: [{status:'KALIBRACE',subtext:'Míchám to s toluenem...'},{status:'MINIHRA',subtext:'Stabilizuj napětí!'},{status:'ANALÝZA',subtext:'Dobrý matroš...'},{status:'HOTOVO',subtext:'Čistota 98%, kámo!'}],
+                labUpgrades: {
+                    filtration: { name: 'Lepší filtrace', description: 'Snižuje pasivní nárůst threat levelu.', cost: 3, unlocked: false },
+                    stabilizer: { name: 'Stabilizátor napětí', description: 'Zvětšuje zelenou zónu v minihře.', cost: 5, unlocked: false },
+                    invisibility: { name: 'Nenápadný batoh', description: 'Snižuje šanci na paranoidní události.', cost: 8, unlocked: false }
+                },
+                paranoiaToasts: {
+                    mild: ["Ticho… slyšíš to?","To nebyl vítr.","Někdo tu byl.","Zhaslo to samo?","Stín u dveří zmizel.","Ta kamera se pohnula.","Notifikace bez odesílatele.","Zámek cvakl. Dvakrát.","Okno pootevřené. Kdo?","Někdo mi dýchá na krk.","Kroky na chodbě.","Signál kolísá… proč?","Pes štěká. Jen jednou.","Svědí mě záda. Instinkt.","GPS skočila o 3 metry.","Zrcadlo je zamlžené. Ne já.","Zpráva smazána sama.","Už tu dávno nejsi sám."],
+                    alert: ["Někdo mě sleduje.","Jsou za dveřma!","Zhasni. Hned.","Už jdou…","Světla blikají. Maják?","Viděl jsi ten stín?","Tři klepnutí na okno.","Siréna v dálce. Blíží se.","Dveře dýchají.","Kamera se směje.","Šepot ze zásuvky.","Slyšíš kroky nad námi.","Wi-Fi má cizí jméno.","Volá neznámý. Bez čísla.","Zámek drží… zatím.","Někdo stojí za záclonou.","Nedívej se ven.","Vypni mobil. Teď."],
+                    critical: ["Utíkej. Teď hned.","Svítí na nás modro-červeně.","Dveře se nehýbou. Oni jo.","Je jich víc, než si myslíš.","Zhasli nám jméno.","Okno šeptá tvoje číslo.","Vlezli do zámku.","Za tebou. Neotáčej se.","Neptej se. Dýchej tiše.","Mají klíč. Náš klíč.","Výtah se zastavil u nás.","Kroky se dělí. Dva směry.","Sirenám došel vzduch.","Signál: nulový. Záměrně.","Zvonek bez prstu.","Nekoukej do kamery.","Dveře poddávají. Počítám do tří.","Poslední světlo právě mrklo."]
+                }
+            };
 
-            /**
-             * InteractiveBackground class for managing the Three.js canvas.
-             */
             class InteractiveBackground {
                 constructor(container) {
                     this.container = container;
                     this.scene = new THREE.Scene();
                     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
                     this.renderer = new THREE.WebGLRenderer({ canvas: this.container, alpha: true });
-                    this.particles = null;
+                    this.objects = [];
                     this.mouse = new THREE.Vector2(-100, -100);
                     this.init();
                 }
@@ -150,57 +243,79 @@
                     this.renderer.setSize(window.innerWidth, window.innerHeight);
                     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
                     this.camera.position.z = 5;
+                    
+                    // Add fog for atmosphere
+                    this.scene.fog = new THREE.FogExp2(0x0a192f, 0.15);
 
-                    const particleCount = 5000;
-                    const positions = new Float32Array(particleCount * 3);
-                    for (let i = 0; i < particleCount * 3; i++) {
-                        positions[i] = (Math.random() - 0.5) * 10;
+                    const materials = [
+                        new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.8, metalness: 0.1 }), // Syringe body
+                        new THREE.MeshStandardMaterial({ color: 0x00f6ff, emissive: 0x00f6ff, emissiveIntensity: 0.5, roughness: 0.2, metalness: 0.5 }), // Syringe liquid
+                        new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.5, metalness: 0.8 }), // Needle
+                        new THREE.MeshStandardMaterial({ color: 0xfacc15, emissive: 0xfacc15, emissiveIntensity: 0.3, roughness: 0.5, metalness: 0.1 }), // Pill
+                        new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.2, roughness: 0.1, metalness: 0 }) // Baggie
+                    ];
+
+                    // Create thematic objects
+                    for (let i = 0; i < 50; i++) {
+                        let obj;
+                        const type = Math.random();
+                        if (type < 0.33) { // Syringe
+                            obj = new THREE.Group();
+                            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.8, 8), materials[0]);
+                            const liquid = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.5, 8), materials[1]);
+                            liquid.position.y = -0.15;
+                            const needle = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.01, 0.4, 8), materials[2]);
+                            needle.position.y = -0.6;
+                            obj.add(body, liquid, needle);
+                        } else if (type < 0.66) { // Pill
+                            obj = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.05, 16), materials[3]);
+                        } else { // Baggie
+                            obj = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.6), materials[4]);
+                        }
+                        
+                        obj.position.set((Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10, (Math.random() - 0.5) * 10);
+                        obj.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+                        obj.userData.rotationSpeed = new THREE.Vector3(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1);
+                        this.scene.add(obj);
+                        this.objects.push(obj);
                     }
-                    const particlesGeometry = new THREE.BufferGeometry();
-                    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-                    const particlesMaterial = new THREE.PointsMaterial({
-                        size: 0.015,
-                        color: new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--accent-cyan')),
-                        transparent: true,
-                        opacity: 0.7,
-                        blending: THREE.AdditiveBlending
-                    });
-                    this.particles = new THREE.Points(particlesGeometry, particlesMaterial);
-                    this.scene.add(this.particles);
+
+                    const ambientLight = new THREE.AmbientLight(0x404040, 2);
+                    this.scene.add(ambientLight);
+                    const pointLight = new THREE.PointLight(0x00f6ff, 1, 100);
+                    pointLight.position.set(0, 0, 10);
+                    this.scene.add(pointLight);
 
                     window.addEventListener('resize', this.onWindowResize.bind(this));
                     window.addEventListener('mousemove', this.onMouseMove.bind(this));
                     this.animate();
                 }
 
-                onWindowResize() {
-                    this.camera.aspect = window.innerWidth / window.innerHeight;
-                    this.camera.updateProjectionMatrix();
-                    this.renderer.setSize(window.innerWidth, window.innerHeight);
-                }
-
-                onMouseMove(event) {
-                    this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-                    this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-                }
-
+                onWindowResize() { this.camera.aspect = window.innerWidth / window.innerHeight; this.camera.updateProjectionMatrix(); this.renderer.setSize(window.innerWidth, window.innerHeight); }
+                onMouseMove(event) { this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1; this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1; }
+                
                 animate() {
                     requestAnimationFrame(this.animate.bind(this));
                     const elapsedTime = new Date().getTime() * 0.0001;
-                    this.particles.rotation.y = elapsedTime * 0.5;
-                    this.particles.position.x += (this.mouse.x * 0.5 - this.particles.position.x) * 0.02;
-                    this.particles.position.y += (this.mouse.y * 0.5 - this.particles.position.y) * 0.02;
+                    
+                    this.objects.forEach(obj => {
+                        obj.rotation.x += obj.userData.rotationSpeed.x * 0.1;
+                        obj.rotation.y += obj.userData.rotationSpeed.y * 0.1;
+                        obj.rotation.z += obj.userData.rotationSpeed.z * 0.1;
+                    });
+                    
+                    this.camera.position.x += (this.mouse.x * 0.5 - this.camera.position.x) * 0.02;
+                    this.camera.position.y += (this.mouse.y * 0.5 - this.camera.position.y) * 0.02;
+                    this.camera.lookAt(this.scene.position);
+
                     this.renderer.render(this.scene, this.camera);
                 }
             }
             
-            /**
-             * SmazakGame class for managing the entire game logic.
-             */
             class SmazakGame {
                 constructor() {
-                    this.state = { gameState: 'MENU', isScanning: false, threatIndex: 0, currentSubject: null, timers: { threat: null, scanStep: null } };
-                    this.elements = { stage: document.getElementById('stage'), scenes: { game: document.getElementById('scene-game'), menu: document.getElementById('scene-menu') }, overlays: { pause: document.getElementById('overlay-pause') }, buttons: { play: document.getElementById('play-button'), scan: document.getElementById('scan-button'), pause: document.getElementById('pause-button'), resume: document.getElementById('resume-button'), profile: document.getElementById('profile-button'), back: document.getElementById('back-button') }, hud: { status: document.getElementById('hud-status'), subtext: document.getElementById('hud-subtext'), bpm: document.getElementById('stat-bpm'), risk: document.getElementById('stat-risk'), threatGauge: document.getElementById('threat-gauge-fill') }, scanner: document.getElementById('scanner'), toastContainer: document.getElementById('toast-container'), overlay: { title: document.getElementById('overlay-title'), content: document.getElementById('overlay-content') } };
+                    this.state = { gameState: 'MENU', isScanning: false, threatIndex: 0, currentSubject: null, timers: { threat: null, scanStep: null, paranoia: null }, lab: { components: 0, upgrades: { ...DATA.labUpgrades } }, minigame: { active: false, animationFrame: null, position: 0, speed: 2, direction: 1 } };
+                    this.elements = { stage: document.getElementById('stage'), scenes: { game: document.getElementById('scene-game'), menu: document.getElementById('scene-menu') }, overlay: document.getElementById('overlay'), buttons: { play: document.getElementById('play-button'), scan: document.getElementById('scan-button'), varna: document.getElementById('varna-button'), back: document.getElementById('back-button') }, hud: { status: document.getElementById('hud-status'), subtext: document.getElementById('hud-subtext'), bpm: document.getElementById('stat-bpm'), bpmPill: document.getElementById('stat-bpm-pill'), risk: document.getElementById('stat-risk'), threatGauge: document.getElementById('threat-gauge-fill') }, scanner: document.getElementById('scanner'), toastContainer: document.getElementById('toast-container'), overlayElements: { title: document.getElementById('overlay-title'), content: document.getElementById('overlay-content') }, subjectCard: { container: document.getElementById('subject-card'), name: document.getElementById('subject-card-name') }, minigame: { container: document.getElementById('minigame-container'), target: document.getElementById('minigame-target'), marker: document.getElementById('minigame-marker') } };
                     this.init();
                 }
 
@@ -211,26 +326,24 @@
                     new InteractiveBackground(document.getElementById('webgl-canvas'));
                 }
                 
-                // --- UTILITIES ---
                 randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
                 getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
                 vibrate = (pattern) => { if (navigator.vibrate) navigator.vibrate(pattern); };
                 
-                // --- SETUP & STATE MANAGEMENT ---
                 scaleStage = () => {
                     const scale = Math.min(window.innerWidth / 360, window.innerHeight / 640);
                     this.elements.stage.style.transform = `scale(${scale})`;
                 };
 
-                setGameState(newState) {
+                setGameState(newState, overlayMode = null) {
                     this.state.gameState = newState;
                     Object.values(this.elements.scenes).forEach(s => s.classList.add('hidden'));
-                    this.elements.overlays.pause.classList.add('hidden');
+                    this.elements.overlay.classList.add('hidden');
 
                     switch (newState) {
                         case 'MENU': this.elements.scenes.menu.classList.remove('hidden'); this.stopThreatTimer(); break;
                         case 'PLAYING': this.elements.scenes.game.classList.remove('hidden'); this.startThreatTimer(); break;
-                        case 'PAUSED': this.elements.scenes.game.classList.remove('hidden'); this.elements.overlays.pause.classList.remove('hidden'); this.stopThreatTimer(); this.updateOverlayContent('pause'); break;
+                        case 'OVERLAY': this.elements.scenes.game.classList.remove('hidden'); this.elements.overlay.classList.remove('hidden'); this.stopThreatTimer(); if (overlayMode) this.updateOverlayContent(overlayMode); break;
                     }
                 }
                 
@@ -238,21 +351,21 @@
                     window.addEventListener('resize', this.scaleStage);
                     this.elements.buttons.play.addEventListener('pointerdown', () => this.startGame());
                     this.elements.buttons.scan.addEventListener('pointerdown', () => this.runScanSequence());
-                    this.elements.buttons.pause.addEventListener('pointerdown', () => this.setGameState('PAUSED'));
-                    this.elements.buttons.resume.addEventListener('pointerdown', () => this.setGameState('PLAYING'));
-                    this.elements.buttons.profile.addEventListener('pointerdown', () => this.updateOverlayContent('profile'));
-                    this.elements.buttons.back.addEventListener('pointerdown', () => this.updateOverlayContent('pause'));
-                    this.elements.scanner.addEventListener('pointerdown', () => { this.toast('Senzor aktivní.'); this.vibrate(10); });
-                    document.addEventListener('keydown', (e) => { if (e.key === "Escape" && this.state.gameState === 'PAUSED') this.setGameState('PLAYING'); });
+                    this.elements.buttons.varna.addEventListener('pointerdown', () => this.updateOverlayContent('varna'));
+                    this.elements.buttons.back.addEventListener('pointerdown', () => this.setGameState('PLAYING'));
+                    this.elements.subjectCard.container.addEventListener('pointerdown', () => this.setGameState('OVERLAY', 'profile'));
+                    this.elements.hud.bpmPill.addEventListener('pointerdown', () => {
+                        if(this.state.currentSubject) this.toast(this.getRandomElement(this.state.currentSubject.toastPhrases));
+                    });
+                    this.elements.minigame.container.addEventListener('pointerdown', () => this.handleMinigameClick());
                 }
 
-                // --- GAME LOGIC ---
                 startGame() {
                     this.setSubject();
                     this.state.threatIndex = 0;
                     this.updateThreat(0);
                     this.updateStats();
-                    this.setHUD('READY', 'Čekám na lajnu', 'NAJDI NEJBLIŽŠÍHO SMÁŽU');
+                    this.setHUD('READY', 'Čekám na lajnu', 'NAJDI NEJBLIŽŠÍHO SMAŽU');
                     this.setGameState('PLAYING');
                 }
 
@@ -264,9 +377,21 @@
                     setTimeout(() => this.elements.stage.classList.remove('scan-active'), 500);
 
                     let step = 0;
-                    const sequenceStep = () => {
+                    const sequenceStep = (minigameResult = null) => {
+                        if (minigameResult !== null) {
+                            if (minigameResult) {
+                                this.toast('Napětí stabilní! Bonus!');
+                                this.updateThreat(-0.5);
+                                this.state.lab.components++;
+                                this.toast(`+1 SOUČÁSTKA (Máš: ${this.state.lab.components})`);
+                            } else {
+                                this.toast('Přepětí! Risk roste!');
+                                this.updateThreat(1);
+                            }
+                        }
+
                         if (step >= DATA.scanStates.length) {
-                            this.setHUD('READY', 'Čekám na další lajnu', 'NAJDI NEJBLIŽŠÍHO SMÁŽU');
+                            this.setHUD('READY', 'Čekám na další lajnu', 'NAJDI NEJBLIŽŠÍHO SMAŽU');
                             this.elements.buttons.scan.disabled = false;
                             this.state.isScanning = false;
                             this.setSubject();
@@ -274,51 +399,90 @@
                             this.toast('Sken hotový.');
                             return;
                         }
+                        
                         const scanState = DATA.scanStates[step];
-                        const subtextPool = this.state.currentSubject?.toastPhrases || [scanState.subtext];
-                        this.setHUD(scanState.status, this.getRandomElement(subtextPool), scanState.status);
-                        this.updateStats();
-                        this.toast(this.getRandomElement(this.state.currentSubject?.logPhrases || ["..."]));
-                        if (this.state.threatIndex < DATA.threatLevels.length - 1) this.updateThreat(1);
-                        step++;
-                        this.state.timers.scanStep = setTimeout(sequenceStep, 1200);
+                        this.setHUD(scanState.status, scanState.subtext, scanState.status);
+                        
+                        if (scanState.status === 'MINIHRA') {
+                            this.startMinigame().then(sequenceStep);
+                        } else {
+                            this.toast(this.getRandomElement(this.state.currentSubject?.logPhrases || ["..."]));
+                            this.updateStats();
+                            step++;
+                            this.state.timers.scanStep = setTimeout(sequenceStep, 1200);
+                        }
                     };
                     sequenceStep();
                 }
 
-                // --- UI & DATA UPDATES ---
                 updateOverlayContent(mode) {
-                    this.elements.buttons.resume.classList.toggle('hidden', mode === 'profile');
-                    this.elements.buttons.profile.classList.toggle('hidden', mode === 'profile');
-                    this.elements.buttons.back.classList.toggle('hidden', mode !== 'profile');
-                    if (mode === 'pause') {
-                        this.elements.overlay.title.textContent = 'PAUZA';
-                        this.elements.overlay.content.innerHTML = DATA.analysis[this.state.threatIndex] || "Chyba v matrixu.";
-                        this.elements.buttons.resume.textContent = 'POKRAČOVAT';
-                        this.elements.buttons.profile.textContent = 'KARTA CÍLE';
-                    } else if (mode === 'profile' && this.state.currentSubject) {
-                        this.elements.overlay.title.textContent = `KARTA: ${this.state.currentSubject.name.toUpperCase()}`;
-                        this.elements.overlay.content.innerHTML = this.state.currentSubject.profile;
-                        this.elements.buttons.back.textContent = 'ZPĚT';
+                    this.elements.buttons.varna.classList.toggle('hidden', mode === 'varna');
+                    this.elements.buttons.varna.textContent = 'Moje Varna'; // Explicitní pojmenování
+                    if (mode === 'profile' && this.state.currentSubject) {
+                        this.elements.overlayElements.title.textContent = `KARTA: ${this.state.currentSubject.name.toUpperCase()}`;
+                        this.elements.overlayElements.content.innerHTML = this.state.currentSubject.profile;
+                        this.elements.buttons.back.textContent = 'ZPĚT DO HRY';
+                    } else if (mode === 'varna') {
+                        this.elements.overlayElements.title.textContent = 'MOJE VARNA';
+                        let contentHTML = `<p class="mb-4">Nasbírané součástky: <b>${this.state.lab.components}</b></p>`;
+                        for (const [id, upgrade] of Object.entries(this.state.lab.upgrades)) {
+                            const isUnlocked = upgrade.unlocked;
+                            const canAfford = this.state.lab.components >= upgrade.cost;
+                            contentHTML += `<div class="upgrade-item ${isUnlocked ? 'unlocked' : ''}"><h4 class="font-bold">${upgrade.name} ${isUnlocked ? '(AKTIVNÍ)' : ''}</h4><p class="text-xs text-slate-400 mb-2">${upgrade.description}</p>${!isUnlocked ? `<button class="btn btn-sm w-full ${canAfford ? 'bg-green-500' : ''}" ${!canAfford ? 'disabled' : ''} onclick="game.unlockUpgrade('${id}')">KOUPIT ZA ${upgrade.cost}</button>` : ''}</div>`;
+                        }
+                        this.elements.overlayElements.content.innerHTML = contentHTML;
+                        this.elements.buttons.back.textContent = 'ZPĚT NA KARTU';
                     }
                 }
                 
-                setSubject() { this.state.currentSubject = this.getRandomElement(DATA.subjects); }
+                unlockUpgrade(id) {
+                    const upgrade = this.state.lab.upgrades[id];
+                    if (upgrade && !upgrade.unlocked && this.state.lab.components >= upgrade.cost) {
+                        this.state.lab.components -= upgrade.cost;
+                        upgrade.unlocked = true;
+                        this.toast(`Vylepšení "${upgrade.name}" aktivováno!`);
+                        this.vibrate(100);
+                        this.updateOverlayContent('varna');
+                    }
+                }
+                
+                setSubject() {
+                    this.state.currentSubject = this.getRandomElement(DATA.subjects);
+                    this.elements.subjectCard.name.textContent = this.state.currentSubject.name;
+                    this.elements.subjectCard.container.classList.add('visible');
+                }
                 
                 updateThreat(delta) {
-                    if (this.state.isScanning && delta > 0) return;
                     this.state.threatIndex = Math.max(0, Math.min(DATA.threatLevels.length - 1, this.state.threatIndex + delta));
                     this.elements.hud.threatGauge.style.width = `${DATA.threatLevels[this.state.threatIndex].width}%`;
                     if (this.state.threatIndex === DATA.threatLevels.length - 1) this.vibrate([80, 40, 80]);
                 }
 
                 updateStats() {
-                    this.elements.hud.bpm.textContent = this.randomInt(70, 160);
+                    const bpm = this.randomInt(70, 180);
+                    this.elements.hud.bpm.textContent = bpm;
                     this.elements.hud.risk.textContent = `${this.randomInt(10, 95)}%`;
-                    [this.elements.hud.bpm.parentElement, this.elements.hud.risk.parentElement].forEach(el => {
+                    [this.elements.hud.bpmPill, this.elements.hud.risk.parentElement].forEach(el => {
                         el.classList.add('highlight');
                         setTimeout(() => el.classList.remove('highlight'), 500);
                     });
+                    this.checkParanoia(bpm);
+                }
+
+                checkParanoia(bpm) {
+                    if (this.state.lab.upgrades.invisibility.unlocked && Math.random() > 0.5) return; // Šance na ignorování
+                    
+                    clearTimeout(this.state.timers.paranoia);
+                    this.state.timers.paranoia = setTimeout(() => {
+                        if (bpm > 160) {
+                            this.toast(this.getRandomElement(DATA.paranoiaToasts.critical), 'paranoia-critical');
+                            this.vibrate([50, 50, 50, 50, 50]);
+                        } else if (bpm > 140) {
+                            this.toast(this.getRandomElement(DATA.paranoiaToasts.alert), 'paranoia-alert');
+                        } else if (bpm > 120) {
+                            this.toast(this.getRandomElement(DATA.paranoiaToasts.mild), 'paranoia-mild');
+                        }
+                    }, 500);
                 }
 
                 setHUD(status, subtext, buttonText) {
@@ -327,22 +491,73 @@
                     this.elements.buttons.scan.textContent = buttonText;
                 }
 
-                toast(message) {
+                toast(message, type = '') {
                     if (this.elements.toastContainer.children.length >= 5) this.elements.toastContainer.lastElementChild.remove();
                     const toastEl = document.createElement('div');
-                    toastEl.className = 'toast';
+                    toastEl.className = `toast ${type}`;
                     toastEl.textContent = message;
                     this.elements.toastContainer.prepend(toastEl);
-                    setTimeout(() => toastEl.remove(), 3000);
+                    setTimeout(() => toastEl.remove(), type.includes('critical') ? 4000 : 3000);
                 }
                 
-                // --- TIMERS ---
-                startThreatTimer() { this.stopThreatTimer(); this.state.timers.threat = setInterval(() => this.updateThreat(1), 8000); }
+                startThreatTimer() {
+                    this.stopThreatTimer();
+                    let interval = 8000;
+                    if (this.state.lab.upgrades.filtration.unlocked) interval = 12000;
+                    if (this.state.currentSubject?.id === 'nikotin') interval /= 2;
+                    this.state.timers.threat = setInterval(() => this.updateThreat(1), interval);
+                }
                 stopThreatTimer() { clearInterval(this.state.timers.threat); }
+
+                startMinigame() {
+                    return new Promise(resolve => {
+                        this.minigameResolve = resolve;
+                        this.state.minigame.active = true;
+                        this.elements.minigame.container.classList.add('visible');
+                        
+                        let targetWidth = 30;
+                        if (this.state.lab.upgrades.stabilizer.unlocked) targetWidth = 45;
+                        const targetStart = (100 - targetWidth) / 2;
+                        this.elements.minigame.target.style.left = `${targetStart}%`;
+                        this.elements.minigame.target.style.width = `${targetWidth}%`;
+                        this.state.minigame.speed = 1.5 + this.state.threatIndex;
+
+                        const gameLoop = () => {
+                            if (!this.state.minigame.active) return;
+                            let { position, speed, direction } = this.state.minigame;
+                            position += speed * direction;
+                            if (position > 100 || position < 0) {
+                                direction *= -1;
+                                position = Math.max(0, Math.min(100, position));
+                            }
+                            this.elements.minigame.marker.style.left = `${position}%`;
+                            this.state.minigame.position = position;
+                            this.state.minigame.direction = direction;
+                            this.state.minigame.animationFrame = requestAnimationFrame(gameLoop);
+                        };
+                        gameLoop();
+                    });
+                }
+
+                handleMinigameClick() {
+                    if (!this.state.minigame.active) return;
+                    this.state.minigame.active = false;
+                    cancelAnimationFrame(this.state.minigame.animationFrame);
+                    this.elements.minigame.container.classList.remove('visible');
+                    const markerPos = this.state.minigame.position;
+                    const targetStart = parseFloat(this.elements.minigame.target.style.left);
+                    const targetEnd = targetStart + parseFloat(this.elements.minigame.target.style.width);
+                    const success = markerPos >= targetStart && markerPos <= targetEnd;
+                    this.vibrate(success ? 50 : [100, 50, 100]);
+                    if (this.minigameResolve) {
+                        this.minigameResolve(success);
+                        this.minigameResolve = null;
+                    }
+                }
             }
 
-            // --- INITIALIZE GAME ---
-            new SmazakGame();
+            const game = new SmazakGame();
+            window.game = game;
         });
     </script>
 </body>
