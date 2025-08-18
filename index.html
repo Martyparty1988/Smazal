@@ -3,421 +3,346 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Najdi smažák v2.0</title>
+    <title>Najdi smažák v4.0</title>
     
     <!-- PWA Icon and Manifest Generator -->
     <script>
         (function() {
-            function drawIcon(size) {
-                const canvas = document.createElement('canvas');
-                canvas.width = size;
-                canvas.height = size;
-                const ctx = canvas.getContext('2d');
-                const scale = size / 512;
-                ctx.fillStyle = '#0a192f';
-                ctx.fillRect(0, 0, size, size);
-                ctx.translate(size / 2, size / 2);
-                ctx.rotate(-45 * Math.PI / 180);
-                const bodyWidth = 60 * scale, bodyHeight = 250 * scale;
-                const bodyX = -bodyWidth / 2, bodyY = -bodyHeight / 2;
-                ctx.fillStyle = '#e2e8f0';
-                ctx.strokeStyle = '#4a5568';
-                ctx.lineWidth = 8 * scale;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.beginPath();
-                ctx.roundRect(bodyX, bodyY, bodyWidth, bodyHeight, 15 * scale);
-                ctx.stroke();
-                ctx.fill();
-                const liquidGradient = ctx.createLinearGradient(bodyX, bodyY, bodyX, bodyY + bodyHeight);
-                liquidGradient.addColorStop(0, '#00f6ff');
-                liquidGradient.addColorStop(1, '#00b8d4');
-                ctx.fillStyle = liquidGradient;
-                ctx.beginPath();
-                ctx.roundRect(bodyX + 5 * scale, bodyY + 100 * scale, bodyWidth - 10 * scale, bodyHeight - 105 * scale, 10 * scale);
-                ctx.fill();
-                const plungerY = bodyY - 100 * scale;
-                ctx.fillStyle = '#718096';
-                ctx.strokeStyle = '#2d3748';
-                ctx.lineWidth = 4 * scale;
-                ctx.beginPath();
-                ctx.roundRect(bodyX - 20 * scale, plungerY - 30 * scale, bodyWidth + 40 * scale, 30 * scale, 10 * scale);
-                ctx.fill();
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.fillRect(bodyX + (bodyWidth / 2) - 5 * scale, plungerY, 10 * scale, 100 * scale);
-                const needleBaseY = bodyY + bodyHeight;
-                ctx.fillStyle = '#c0c0c0';
-                ctx.strokeStyle = '#718096';
-                ctx.lineWidth = 2 * scale;
-                ctx.beginPath();
-                ctx.fillRect(bodyX + 10 * scale, needleBaseY, bodyWidth - 20 * scale, 20 * scale);
-                ctx.beginPath();
-                ctx.moveTo(0, needleBaseY + 20 * scale);
-                ctx.lineTo(0, needleBaseY + 140 * scale);
-                ctx.strokeStyle = '#c0c0c0';
-                ctx.lineWidth = 6 * scale;
-                ctx.stroke();
-                return canvas.toDataURL('image/png');
+            if (CanvasRenderingContext2D.prototype.roundRect === undefined) {
+                CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) { this.beginPath(); this.moveTo(x + r, y); this.lineTo(x + w - r, y); this.quadraticCurveTo(x + w, y, x + w, y + r); this.lineTo(x + w, y + h - r); this.quadraticCurveTo(x + w, y + h, x + w - r, y + h); this.lineTo(x + r, y + h); this.quadraticCurveTo(x, y + h, x, y + h - r); this.lineTo(x, y + r); this.quadraticCurveTo(x, y, x + r, y); this.closePath(); };
             }
-            const icon192 = drawIcon(192), icon512 = drawIcon(512), favicon = drawIcon(32), themeColor = '#0a192f';
-            const manifest = { name: "Najdi smažák", short_name: "Smažák", start_url: ".", display: "standalone", background_color: themeColor, theme_color: themeColor, icons: [{ src: icon192, type: "image/png", sizes: "192x192" }, { src: icon512, type: "image/png", sizes: "512x512" }] };
-            const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-            const manifestURL = URL.createObjectURL(blob);
-            document.head.insertAdjacentHTML('beforeend', `<link rel="icon" href="${favicon}"><link rel="apple-touch-icon" href="${icon192}"><link rel="manifest" href="${manifestURL}"><meta name="theme-color" content="${themeColor}"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">`);
+            function drawIcon(size) {
+                const canvas = document.createElement('canvas'); canvas.width = size; canvas.height = size; const ctx = canvas.getContext('2d'); const scale = size / 512; ctx.fillStyle = '#0a192f'; ctx.fillRect(0, 0, size, size); ctx.translate(size / 2, size / 2); ctx.rotate(-45 * Math.PI / 180); const bodyWidth = 60 * scale, bodyHeight = 250 * scale; const bodyX = -bodyWidth / 2, bodyY = -bodyHeight / 2; ctx.fillStyle = '#e2e8f0'; ctx.strokeStyle = '#4a5568'; ctx.lineWidth = 8 * scale; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.roundRect(bodyX, bodyY, bodyWidth, bodyHeight, 15 * scale); ctx.stroke(); ctx.fill(); const liquidGradient = ctx.createLinearGradient(bodyX, bodyY, bodyX, bodyY + bodyHeight); liquidGradient.addColorStop(0, '#00f6ff'); liquidGradient.addColorStop(1, '#00b8d4'); ctx.fillStyle = liquidGradient; ctx.beginPath(); ctx.roundRect(bodyX + 5 * scale, bodyY + 100 * scale, bodyWidth - 10 * scale, bodyHeight - 105 * scale, 10 * scale); ctx.fill(); const plungerY = bodyY - 100 * scale; ctx.fillStyle = '#718096'; ctx.strokeStyle = '#2d3748'; ctx.lineWidth = 4 * scale; ctx.beginPath(); ctx.roundRect(bodyX - 20 * scale, plungerY - 30 * scale, bodyWidth + 40 * scale, 30 * scale, 10 * scale); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.fillRect(bodyX + (bodyWidth / 2) - 5 * scale, plungerY, 10 * scale, 100 * scale); const needleBaseY = bodyY + bodyHeight; ctx.fillStyle = '#c0c0c0'; ctx.strokeStyle = '#718096'; ctx.lineWidth = 2 * scale; ctx.beginPath(); ctx.fillRect(bodyX + 10 * scale, needleBaseY, bodyWidth - 20 * scale, 20 * scale); ctx.beginPath(); ctx.moveTo(0, needleBaseY + 20 * scale); ctx.lineTo(0, needleBaseY + 140 * scale); ctx.strokeStyle = '#c0c0c0'; ctx.lineWidth = 6 * scale; ctx.stroke(); return canvas.toDataURL('image/png');
+            }
+            const icon192 = drawIcon(192), icon512 = drawIcon(512), favicon = drawIcon(32), themeColor = '#0a192f'; const manifest = { name: "Najdi smažák v4.0", short_name: "Smažák", start_url: ".", display: "standalone", background_color: themeColor, theme_color: themeColor, icons: [{ src: icon192, type: "image/png", sizes: "192x192" }, { src: icon512, type: "image/png", sizes: "512x512" }] }; const blob = new Blob([JSON.stringify(manifest)], { type: 'application/json' }); const manifestURL = URL.createObjectURL(blob); document.head.insertAdjacentHTML('beforeend', `<link rel="icon" href="${favicon}"><link rel="apple-touch-icon" href="${icon192}"><link rel="manifest" href="${manifestURL}"><meta name="theme-color" content="${themeColor}"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">`);
         })();
     </script>
 
+    <!-- Libraries: Three.js for WebGL -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Tailwind CSS & Fonts -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <!-- Inline Styles -->
     <style>
         :root {
-            --bg-color: #0a192f; --bg-gradient-mid: #0d4e5a; --bg-gradient-end: #4a0e4e;
+            --bg-color: #0a192f;
             --accent-cyan: #00f6ff; --accent-purple: #a855f7; --accent-yellow: #facc15;
             --accent-red: #f87171; --accent-green: #4ade80;
             --text-primary: #e2e8f0; --text-secondary: #94a3b8;
             --glass-bg: rgba(28, 37, 61, 0.5); --glass-border: rgba(100, 116, 139, 0.2);
             --glow-cyan: rgba(0, 246, 255, 0.4); --glow-purple: rgba(168, 85, 247, 0.45);
-            --glow-yellow: rgba(250, 204, 21, 0.45); --glow-red: rgba(248, 113, 113, 0.55);
-            --safe-area-top: env(safe-area-inset-top); --safe-area-bottom: env(safe-area-inset-bottom);
+            --safe-area-top: env(safe-area-inset-top, 0px); --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-area-left: env(safe-area-inset-left, 0px); --safe-area-right: env(safe-area-inset-right, 0px);
         }
-        html { scroll-behavior: smooth; }
-        body {
+        html, body {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            overflow: hidden; touch-action: none; -webkit-tap-highlight-color: transparent;
+            background-color: var(--bg-color); color: var(--text-primary);
             font-family: 'Share Tech Mono', monospace;
-            background-color: var(--bg-color);
-            background-image: linear-gradient(160deg, var(--bg-color) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
-            color: var(--text-primary);
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
         }
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: radial-gradient(var(--text-secondary) 0.5px, transparent 0.5px);
-            background-size: 15px 15px;
-            opacity: 0.05; pointer-events: none; z-index: -1;
+        #webgl-canvas { position: fixed; top: 0; left: 0; z-index: 0; }
+        #root {
+            position: fixed; inset: 0; z-index: 1;
+            display: flex; align-items: center; justify-content: center;
         }
+        #stage {
+            position: relative; width: 360px; height: 640px;
+            transform-origin: center center; overflow: hidden;
+            display: flex; flex-direction: column;
+            padding: var(--safe-area-top) var(--safe-area-right) var(--safe-area-bottom) var(--safe-area-left);
+        }
+        /* CRT / Scanlines Effect */
+        #stage::after {
+            content: ''; position: absolute; inset: 0; z-index: 100;
+            pointer-events: none;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 3px 100%;
+            animation: flicker 0.15s infinite;
+        }
+        @keyframes flicker { 0% { opacity: 0.2; } 20% { opacity: 0.8; } 40% { opacity: 0.3; } 60% { opacity: 0.9; } 80% { opacity: 0.2; } 100% { opacity: 0.8; } }
+        
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
-        .glass-panel {
-            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border); border-radius: 24px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(0, 246, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-        .scanner-grid {
-            background-image:
-                linear-gradient(var(--accent-cyan) 1px, transparent 1px),
-                linear-gradient(to right, var(--accent-cyan) 1px, transparent 1px);
-            background-size: 40px 40px;
-            mask-image: radial-gradient(circle, white 50%, transparent 90%);
-            -webkit-mask-image: radial-gradient(circle, white 50%, transparent 90%);
-            animation: rotate 20s linear infinite;
-        }
-        .scanner-line {
-            width: 100%; height: 3px; background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
-            box-shadow: 0 0 20px 3px var(--glow-cyan);
-            animation: scan 4s cubic-bezier(0.64, 0, 0.78, 1) infinite;
-        }
+        .hidden { display: none !important; }
+
+        .scene, .overlay { position: absolute; inset: 0; display: flex; flex-direction: column; }
+        .overlay { background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 50; }
+        
+        #hud { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 12px; z-index: 10; gap: 8px; }
+        .threat-gauge { background: var(--glass-bg); border: 1px solid var(--glass-border); height: 12px; border-radius: 99px; padding: 2px; }
+        .threat-gauge > i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent-green), var(--accent-yellow), var(--accent-red)); background-size: 400% 100%; transition: width 0.5s cubic-bezier(0.25, 1, 0.5, 1); will-change: width; }
+        .hud-status { text-shadow: 0 0 10px var(--glow-cyan); }
+        .hud-pill { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 4px 8px; border-radius: 99px; font-size: 12px; text-shadow: 0 0 5px var(--glow-cyan); transition: text-shadow 0.3s, color 0.3s; }
+        .hud-pill.highlight { color: var(--accent-yellow); text-shadow: 0 0 10px var(--accent-yellow); }
+        #pause-button { background: transparent; border: none; font-size: 24px; padding: 4px; }
+
+        #scanner { position: relative; width: 280px; height: 280px; border-radius: 999px; margin: auto; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(0, 246, 255, 0.2); box-shadow: 0 0 30px var(--glow-cyan) inset; }
+        .scanner-ring { position: absolute; inset: -10px; border: 2px dashed var(--accent-cyan); border-radius: 999px; opacity: 0.5; animation: rotate 30s linear infinite; will-change: transform; }
+        .scanner-line { position: absolute; left: 5%; width: 90%; height: 2px; background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent); box-shadow: 0 0 10px 2px var(--glow-cyan); animation: scan 4s ease-in-out infinite; will-change: top; }
         @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes scan { 0%, 100% { top: 0%; } 50% { top: 100%; } }
-        .glitch-text { animation: glitch 1.5s linear infinite; }
-        @keyframes glitch { 2%,64%{transform: translate(2px,0) skew(0deg)} 4%,60%{transform: translate(-2px,0) skew(0deg)} 62%{transform: translate(0,0) skew(5deg)} }
-        .btn { transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, filter 0.3s ease; }
-        .btn:hover:not(:disabled) { transform: translateY(-3px) scale(1.02); filter: brightness(1.2); }
-        .btn:active:not(:disabled) { transform: scale(0.98); }
-        .btn:disabled { cursor: not-allowed; filter: grayscale(80%); opacity: 0.6; }
-        .btn-scan { background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); box-shadow: 0 0 30px 5px var(--glow-cyan); }
-        .btn-scan:hover:not(:disabled) { box-shadow: 0 0 40px 10px var(--glow-purple); }
-        .threat-pill { transition: all 0.5s ease; text-shadow: 0 0 5px rgba(0,0,0,0.5); }
-        .threat-low { background-color: var(--accent-green); box-shadow: 0 0 15px var(--accent-green); }
-        .threat-medium { background-color: var(--accent-yellow); box-shadow: 0 0 15px var(--accent-yellow); }
-        .threat-high { background-color: #fb923c; box-shadow: 0 0 15px #fb923c; }
-        .threat-critical { background-color: var(--accent-red); box-shadow: 0 0 20px var(--glow-red); animation: pulse-red 1.5s infinite; }
-        @keyframes pulse-red { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px var(--glow-red); } 50% { transform: scale(1.05); box-shadow: 0 0 30px var(--glow-red); } }
-        .log-entry { animation: fadeIn 0.5s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .stat-value { transition: color 0.3s ease; }
-        .stat-value.highlight { animation: highlight-stat 0.7s ease; }
-        @keyframes highlight-stat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); color: var(--accent-yellow); } }
+        @keyframes scan { 0%, 100% { top: 10%; } 50% { top: 90%; } }
+        
+        #actions { padding: 20px; z-index: 10; }
+        .btn { font-family: 'Orbitron', sans-serif; font-weight: 700; padding: 16px; border-radius: 16px; border: none; color: black; text-transform: uppercase; letter-spacing: 1px; background: linear-gradient(45deg, var(--accent-cyan), var(--accent-purple)); box-shadow: 0 0 20px 2px var(--glow-cyan); transition: transform 0.1s ease, box-shadow 0.2s ease; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .btn:hover:not(:disabled) { box-shadow: 0 0 30px 5px var(--glow-purple); }
+        .btn:active:not(:disabled) { transform: scale(0.97); }
+        .btn:disabled { filter: grayscale(80%); opacity: 0.6; cursor: not-allowed; }
+
+        #toast-container { position: absolute; bottom: 100px; left: 20px; display: flex; flex-direction: column-reverse; gap: 8px; z-index: 40; pointer-events: none; }
+        .toast { background: var(--glass-bg); backdrop-filter: blur(10px); padding: 8px 12px; border-radius: 12px; font-size: 12px; border: 1px solid var(--glass-border); animation: toast-in 0.3s ease-out, toast-out 0.3s ease-in 2.7s; opacity: 0; }
+        @keyframes toast-in { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes toast-out { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-20px); } }
+
+        .panel { margin: auto; width: 85%; background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 24px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); padding: 24px; text-align: center; }
+        .panel-content { max-height: 250px; overflow-y: auto; text-align: left; }
+
+        /* Scan Activation Effect */
+        .scan-active { animation: screen-shake 0.5s, chromatic-aberration 0.5s; }
+        @keyframes screen-shake { 0%, 100% { transform: translateX(0); } 10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); } 20%, 40%, 60%, 80% { transform: translateX(2px); } }
+        @keyframes chromatic-aberration { 0%, 100% { text-shadow: none; filter: none; } 50% { text-shadow: 2px 2px 0 var(--accent-red), -2px -2px 0 var(--accent-cyan); filter: blur(0.5px); } }
+
+        @media (prefers-reduced-motion: reduce) {
+            .scanner-ring, .scanner-line, #stage::after, .scan-active { animation: none; }
+            .toast { animation: none; opacity: 1; }
+            .threat-gauge > i { transition: none; }
+        }
     </style>
 </head>
-<body class="bg-gray-900 min-h-screen p-4 pt-[calc(var(--safe-area-top)+1rem)] pb-[calc(var(--safe-area-bottom)+1rem)]">
-
-    <div class="max-w-md mx-auto flex flex-col space-y-6">
-        
-        <h1 class="font-orbitron text-4xl font-black text-center text-cyan-300 tracking-wider" style="text-shadow: 0 0 15px var(--glow-cyan);">NAJDI SMAŽÁK</h1>
-
-        <header class="flex justify-center items-center px-2 z-10">
-            <div id="threat-level-pill" class="threat-pill threat-low text-black font-bold text-sm py-2 px-5 rounded-full font-orbitron text-center">Na pohodu, jen trošku sjetý</div>
-        </header>
-
-        <div class="relative w-full aspect-square flex items-center justify-center my-4 overflow-hidden rounded-full">
-            <div id="scanner-visual" class="absolute w-full h-full bg-black/30">
-                <div class="scanner-grid opacity-20 w-full h-full"></div>
-                <div class="scanner-line absolute left-0"></div>
+<body>
+    <canvas id="webgl-canvas"></canvas>
+    <div id="root" role="application">
+        <div id="stage">
+            <div id="scene-game" class="scene hidden">
+                <header id="hud" aria-label="Herní statistiky"><div class="threat-gauge"><i id="threat-gauge-fill"></i></div><div class="text-center"><div id="hud-status" class="font-orbitron font-bold text-lg text-cyan-300 hud-status" aria-live="polite"></div><div id="hud-subtext" class="text-xs text-slate-400"></div></div><div class="flex items-center justify-end gap-2"><div class="hud-pill">BPM <b id="stat-bpm"></b></div><div class="hud-pill">RISK <b id="stat-risk"></b></div><button id="pause-button" aria-label="Pauza">⏸</button></div></header>
+                <main class="flex-1 flex items-center justify-center"><div id="scanner" role="button" aria-label="Skenovací oblast"><div class="scanner-ring"></div><div class="scanner-line"></div><div class="font-orbitron text-2xl font-black text-cyan-300 text-center" style="text-shadow: 0 0 15px var(--glow-cyan);">NAJDI<br>SMAŽÁK</div></div></main>
+                <footer id="actions"><button id="scan-button" class="btn w-full"></button></footer>
             </div>
-            <div class="font-orbitron text-center z-10 p-4">
-                <div id="scanner-status" class="text-4xl font-bold text-cyan-300 transition-all duration-300" style="text-shadow: 0 0 15px var(--glow-cyan);">READY</div>
-                <div id="scanner-subtext" class="text-sm text-slate-400 transition-all mt-1">Čekám na lajnu</div>
-            </div>
-        </div>
-
-        <button id="scan-button" class="btn btn-scan w-full p-4 rounded-2xl text-xl font-orbitron font-bold text-black tracking-wider shadow-lg">NAJDI NEJBLIŽŠÍHO SMÁŽU</button>
-
-        <div class="glass-panel p-5">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-orbitron text-lg tracking-widest">PROFIL CÍLE</h3>
-                <button id="profile-button" class="btn bg-cyan-500/80 px-4 py-1.5 rounded-lg text-xs font-orbitron font-bold text-black shadow-md" style="box-shadow: 0 0 15px var(--glow-cyan);">DOTAZ NA KARTU</button>
-            </div>
-            <div class="flex items-center space-x-4 mb-4">
-                <div class="w-24 h-24 rounded-full border-2 border-cyan-400 shadow-lg flex-shrink-0 p-1" style="box-shadow: 0 0 20px var(--glow-cyan);">
-                    <div class="w-full h-full rounded-full bg-black/50 flex items-center justify-center">
-                        <span id="subject-avatar-text" class="font-orbitron text-xl font-black text-cyan-300">ŠLEHAŘ</span>
-                    </div>
-                </div>
-                <div class="flex-1">
-                    <div id="subject-name" class="font-bold text-xl font-orbitron">Šlehař Delta-Piko</div>
-                    <div id="target-threat-pill" class="mt-2 threat-pill threat-low text-black text-xs font-bold py-1 px-3 rounded-full inline-block text-center">Na pohodu</div>
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-4 text-center text-xs">
-                <div class="glass-panel p-3 rounded-lg"><div id="stat-bpm" class="stat-value font-bold text-2xl text-cyan-300 font-orbitron">82</div><div class="text-slate-400 tracking-widest">TEP/MIN</div></div>
-                <div class="glass-panel p-3 rounded-lg"><div id="stat-risk" class="stat-value font-bold text-2xl text-cyan-300 font-orbitron">18%</div><div class="text-slate-400 tracking-widest">RIZIKO</div></div>
-            </div>
-             <button id="ai-analysis-button" class="btn bg-yellow-400/90 w-full p-3 mt-4 rounded-lg text-md font-orbitron font-bold text-black tracking-wider shadow-lg hidden" style="box-shadow: 0 0 20px var(--glow-yellow);">✨ PORADNA OD DEALERŮ</button>
-        </div>
-
-        <div class="glass-panel p-5">
-            <h3 class="font-orbitron text-lg mb-4 tracking-widest">ZÁZNAM AKTIVITY</h3>
-            <ul id="activity-log" class="space-y-3 text-sm h-48 overflow-y-auto pr-2"></ul>
-        </div>
-    </div>
-
-    <div id="ai-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50 hidden opacity-0 transition-opacity duration-300" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <div class="glass-panel w-full max-w-lg p-6 relative animate-fadeIn">
-            <button id="modal-close-button" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors" aria-label="Zavřít okno">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
-            </button>
-            <h3 id="modal-title" class="font-orbitron text-xl mb-4 text-cyan-300 tracking-widest"></h3>
-            <div id="modal-content" class="text-slate-300 leading-relaxed max-h-[60vh] overflow-y-auto"></div>
+            <div id="scene-menu" class="scene items-center justify-center"><div class="panel"><h1 class="font-orbitron text-4xl font-black text-cyan-300 mb-2" style="text-shadow: 0 0 15px var(--glow-cyan);">NAJDI SMAŽÁK</h1><p class="text-slate-400 mb-6">verze 4.0</p><button id="play-button" class="btn w-full">HRÁT</button></div></div>
+            <div id="overlay-pause" class="overlay hidden items-center justify-center" role="dialog" aria-modal="true"><div class="panel"><h2 id="overlay-title" class="font-orbitron text-2xl font-bold text-cyan-300 mb-4"></h2><div id="overlay-content" class="panel-content text-slate-300 mb-6"></div><div class="flex flex-col gap-3"><button id="resume-button" class="btn w-full"></button><button id="profile-button" class="btn w-full bg-yellow-400/90" style="box-shadow: 0 0 20px rgba(250, 204, 21, 0.45);"></button><button id="back-button" class="btn w-full bg-gray-500/80 hidden" style="box-shadow: none;"></button></div></div></div>
+            <div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- OFFLINE DATA LIBRARY ---
-            const DATA = {
-                subjects: [
-                    { id: 'slehac', name: 'Šlehař Delta-Piko', avatar: 'ŠLEHAŘ', profile: 'Původ: Uliční varna v Žižkově.<br><br>Schopnosti: Pozná feťáka na 200 metrů.<br><br>Slabiny: Bojí se holubů.', toastPhrases: ['Čistota nad 80 %, leť.', 'Filtr čistý. Nezakecej.', 'Míchám to jak boží prst.', 'Teplota drží, nepřepal.', 'Vzorek stabilní. Plynule.'], logPhrases: ['Vařím dávku, drž se', 'Šlehám vrstvičku I', 'Dealer hlásí, že zboží jede', 'Piko čistota 78 %, dobrý', 'Připravuju stříkačku', 'Váha ukazuje přesně, dneska to bude jízda.', 'Filtruju přes cigaretu, klasika.'] },
-                    { id: 'hulic', name: 'Hulič Zubatá Žárovka', avatar: 'HULIČ', profile: 'Původ: Skleník za panelákem.<br><br>Schopnosti: Umí ubalit brko i poslepu.<br><br>Slabiny: Neustále se směje vlastním vtipům.', toastPhrases: ['Táhne to. Drž linku.', 'Popel si sedá, klid.', 'Sklo čistý – respekt.', 'Seshni to na špičku.', 'Vlhkej kašel? Voda, kámo.'], logPhrases: ['Přepaluju sklo', 'Už to bublá, kámo', 'Mám totální červený oči', 'Kde je zapalovač?', 'Tohle je silnej model', 'Mám vlčí hlad, objednávám pizzu.', 'Kde mám drtičku? Zase jsem ji ztratil.'] },
-                    { id: 'cichac', name: 'Čichač Trubek Omega', avatar: 'ČICHAČ', profile: 'Původ: Kanály pod hlavním nádražím.<br><br>Schopnosti: Pozná značku ředidla po čichu.<br><br>Slabiny: Často mluví s odpadkovými koši.', toastPhrases: ['Hadr ready. Film běží.', 'Vdechni – nepřeháněj.', 'Profil drží, barvičky.', 'Víčko těsní, klídek.', 'Kanystr mlčí. Zatím.'], logPhrases: ['Čichám toluen z hadru', 'Tohle lepidlo je top', 'Mozek mi odchází na výlet', 'Kde je ta igelitka?', 'Všechno se točí', 'Dneska testuju novej druh ředidla.', 'Ten igeliťák už má díru, potřebuju novej.'] },
-                    { id: 'domingo', name: 'Domingo ze Smíchova', avatar: 'DEALER', profile: 'Původ: Lavička na Andělu.<br><br>Schopnosti: Dokáže prodat cokoliv komukoliv. Kvalita zboží je... proměnlivá.<br><br>Slabiny: Občas má tak dobrej perník, že tě vystřelí z papučí.', toastPhrases: ['Předávka v tichu.', 'Kamera za rohem – bacha.', 'Balíček nenápadnej.', 'Čas jsou prachy.', 'Stín mě kryje.'], logPhrases: ['Mám čerstvej matroš, chceš?', 'Dneska akce, dva za cenu jednoho.', 'Bacha, za rohem stojej fízlové.', 'Platba jen v hotovosti, kámo.', 'Tohle je čistý, přísahám.', 'Nekoukej tak nápadně, nejsme tu sami.'] },
-                    { id: 'pedro', name: 'Pedro Perníček', avatar: 'DOVOZ', profile: 'Původ: Neznámý, vždy na cestě.<br><br>Schopnosti: Expresní doručení až do domu 24/7.<br><br>Slabiny: Občas si splete adresu.', toastPhrases: ['Brzdím. Brána?', 'Objížďka hotová.', 'Zvoním a mizím.', 'Expres režim.', 'Před domem za 2 minuty.'], logPhrases: ['Jsem na cestě, čekej.', 'Už jsem za rohem, připrav prachy.', 'Máš přesně? Nemám na vrácení.', 'Dneska mám zpoždění, kolony.', 'Nová várka, silnější než minule.', 'Stojím před barákem, kde jsi?'] },
-                    { id: 'chemik', name: 'Chemik z VŠCHT', avatar: 'CHEMIK', profile: 'Původ: Tajná laboratoř v Dejvicích.<br><br>Schopnosti: Syntetizuje s přesností na mikrogram.<br><br>Slabiny: Potřebuje absolutní ticho a kávu.', toastPhrases: ['Reakce stabilní.', 'Vzorek pod kontrolou.', 'Teplota drží ±0,1°C.', 'PH přesně v normě.', 'Analýza běží.'], logPhrases: ['Titrační křivka perfektní.', 'Měření přesné na mikron.', 'Žádná sedimentace.', 'Odpar 0,02 % – ideál.', 'Spektrum bez šumu.', 'Reaktor stabilní.', 'Kalibrace 100 %. Hotovo.'] },
-                    { id: 'dispecer', name: 'Dispečer Sítě', avatar: 'DISPEČER', profile: 'Původ: Anonymní serverovna pod Prahou.<br><br>Schopnosti: Koordinuje logistiku celé sítě bez jediné chyby.<br><br>Slabiny: Nikdy neopouští své křeslo.', toastPhrases: ['Trasa potvrzená.', 'Cíl v dosahu.', 'Další zastávka připravena.', 'Okno pro přesun otevřené.', 'Bezpečný koridor aktivní.'], logPhrases: ['Satelitní snímek ověřen.', 'Žádné překážky na trase.', 'Překresluju mapu pohybu.', 'Nový bod zájmu přidán.', 'Cílová zóna čistá.', 'Předávám souřadnice.', 'Radiový kontakt navázán.'] }
-                ],
-                threatLevels: [
-                    { name: 'Na pohodu, jen trošku sjetý', class: 'threat-low', level: 0 },
-                    { name: 'Půl dávky v žíle', class: 'threat-medium', level: 1 },
-                    { name: 'Na šrot', class: 'threat-high', level: 2 },
-                    { name: 'Totál Overdose', class: 'threat-critical', level: 3 }
-                ],
-                analysis: {
-                    0: ["Vypadáš v klidu, ale nepodceňuj to. Dej si pauzu, napij se a neblbni.", "Na pohodu, ale bacha. I malá lajna umí kopnout. Zůstaň doma a dej si oraz."],
-                    1: ["Už to v sobě máš, kámo. Zpomal, nebo to přeženeš. Najez se a dej si studenou sprchu.", "Jsi na půli cesty do pekla. Jestli si dáš ještě jednu, bude zle. Vypni telefon a zalez."],
-                    2: ["Jsi na šrot, kámo. Okamžitě přestaň. Sežeň někoho, kdo tě pohlídá, ať neuděláš blbost.", "Tohle je průser. Jsi krok od totálního kolapsu. Žádný další experimenty, potřebuješ klid a vodu."],
-                    3: ["Totální overdose, vole! Jestli jsi sám, volej rychlou, nedělám si srandu. Tohle je o život.", "KONEC. PŘESTAŇ. Jsi v kritickým stavu. Potřebuješ pomoc, a to hned."]
-                },
-                scanStates: [
-                    { status: 'KALIBRACE', subtext: 'Míchám to s toluenem...' },
-                    { status: 'SKENOVÁNÍ', subtext: 'Zapalovač skoro hoří...' },
-                    { status: 'ANALÝZA', subtext: 'Dobrý matroš...' },
-                    { status: 'HOTOVO', subtext: 'Čistota 98%, kámo!' }
-                ],
-                genericLogPhrases: ["Systém online", "Monitoruji frekvence", "Kalibruji senzory", "Čekám na příkazy", "Všechny systémy v normě"]
-            };
+            // --- CONSTANTS & DATA ---
+            const DATA = { subjects: [{id:'slehac',name:'Šlehař Delta-Piko',profile:'Původ: Uliční varna v Žižkově.<br>Schopnosti: Pozná feťáka na 200 metrů.<br>Slabiny: Bojí se holubů.',toastPhrases:['Čistota nad 80 %, leť.','Filtr čistý. Nezakecej.','Míchám to jak boží prst.','Teplota drží, nepřepal.','Vzorek stabilní. Plynule.'],logPhrases:['Vařím dávku, drž se','Šlehám vrstvičku I','Dealer hlásí, že zboží jede','Piko čistota 78 %, dobrý','Připravuju stříkačku','Váha ukazuje přesně.','Filtruju přes cigaretu.']},{id:'hulic',name:'Hulič Zubatá Žárovka',profile:'Původ: Skleník za panelákem.<br>Schopnosti: Umí ubalit brko i poslepu.<br>Slabiny: Neustále se směje vlastním vtipům.',toastPhrases:['Táhne to. Drž linku.','Popel si sedá, klid.','Sklo čistý – respekt.','Seshni to na špičku.','Vlhkej kašel? Voda, kámo.'],logPhrases:['Přepaluju sklo','Už to bublá, kámo','Mám totální červený oči','Kde je zapalovač?','Tohle je silnej model','Mám vlčí hlad.','Kde mám drtičku?']},{id:'cichac',name:'Čichač Trubek Omega',profile:'Původ: Kanály pod hlavním nádražím.<br>Schopnosti: Pozná značku ředidla po čichu.<br>Slabiny: Často mluví s odpadkovými koši.',toastPhrases:['Hadr ready. Film běží.','Vdechni – nepřeháněj.','Profil drží, barvičky.','Víčko těsní, klídek.','Kanystr mlčí. Zatím.'],logPhrases:['Čichám toluen z hadru','Tohle lepidlo je top','Mozek mi odchází na výlet','Kde je ta igelitka?','Všechno se točí','Testuju novej druh ředidla.','Ten igeliťák už má díru.']},{id:'domingo',name:'Domingo ze Smíchova',profile:'Původ: Lavička na Andělu.<br>Schopnosti: Dokáže prodat cokoliv komukoliv. Kvalita zboží je... proměnlivá.<br>Slabiny: Občas má tak dobrej perník, že tě vystřelí z papučí.',toastPhrases:['Předávka v tichu.','Kamera za rohem – bacha.','Balíček nenápadnej.','Čas jsou prachy.','Stín mě kryje.'],logPhrases:['Mám čerstvej matroš, chceš?','Dneska akce, dva za cenu jednoho.','Bacha, za rohem stojej fízlové.','Platba jen v hotovosti, kámo.','Tohle je čistý, přísahám.','Nekoukej tak nápadně.']}], threatLevels: [{width:25},{width:50},{width:75},{width:100}], analysis: ["Vypadáš v klidu, ale nepodceňuj to. Dej si pauzu, napij se a neblbni.","Už to v sobě máš, kámo. Zpomal, nebo to přeženeš. Najez se a dej si studenou sprchu.","Jsi na šrot, kámo. Okamžitě přestaň. Sežeň někoho, kdo tě pohlídá, ať neuděláš blbost.","Totální overdose, vole! Jestli jsi sám, volej rychlou, nedělám si srandu. Tohle je o život."], scanStates: [{status:'KALIBRACE',subtext:'Míchám to s toluenem...'},{status:'SKENOVÁNÍ',subtext:'Zapalovač skoro hoří...'},{status:'ANALÝZA',subtext:'Dobrý matroš...'},{status:'HOTOVO',subtext:'Čistota 98%, kámo!'}] };
 
-            // --- APPLICATION STATE ---
-            const appState = {
-                isProcessing: false,
-                currentSubject: null,
-                currentThreatIndex: 0,
-                lastLog: '',
-                timers: {
-                    threat: null,
-                    scan: null
+            /**
+             * InteractiveBackground class for managing the Three.js canvas.
+             */
+            class InteractiveBackground {
+                constructor(container) {
+                    this.container = container;
+                    this.scene = new THREE.Scene();
+                    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                    this.renderer = new THREE.WebGLRenderer({ canvas: this.container, alpha: true });
+                    this.particles = null;
+                    this.mouse = new THREE.Vector2(-100, -100);
+                    this.init();
                 }
-            };
 
-            // --- DOM ELEMENTS CACHE ---
-            const elements = {
-                threatPill: document.getElementById('threat-level-pill'),
-                scanButton: document.getElementById('scan-button'),
-                scannerStatus: document.getElementById('scanner-status'),
-                scannerSubtext: document.getElementById('scanner-subtext'),
-                activityLog: document.getElementById('activity-log'),
-                statBpm: document.getElementById('stat-bpm'),
-                statRisk: document.getElementById('stat-risk'),
-                aiAnalysisButton: document.getElementById('ai-analysis-button'),
-                profileButton: document.getElementById('profile-button'),
-                modal: document.getElementById('ai-modal'),
-                modalTitle: document.getElementById('modal-title'),
-                modalContent: document.getElementById('modal-content'),
-                modalCloseButton: document.getElementById('modal-close-button'),
-                targetThreatPill: document.getElementById('target-threat-pill'),
-                subjectName: document.getElementById('subject-name'),
-                subjectAvatarText: document.getElementById('subject-avatar-text'),
-            };
+                init() {
+                    this.renderer.setSize(window.innerWidth, window.innerHeight);
+                    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                    this.camera.position.z = 5;
 
-            // --- UTILITY FUNCTIONS ---
-            const utils = {
-                random: (min, max) => Math.random() * (max - min) + min,
-                randomInt: (min, max) => Math.floor(utils.random(min, max + 1)),
-                getRandomElement: (arr) => arr[Math.floor(Math.random() * arr.length)],
-                debounce: (func, delay) => {
-                    let timeout;
-                    return (...args) => {
-                        clearTimeout(timeout);
-                        timeout = setTimeout(() => func.apply(this, args), delay);
-                    };
-                }
-            };
-
-            // --- UI UPDATE FUNCTIONS ---
-            const ui = {
-                updateThreatDisplay: (threat) => {
-                    const pillClass = `threat-pill text-black font-bold text-sm py-2 px-5 rounded-full font-orbitron text-center ${threat.class}`;
-                    elements.threatPill.className = pillClass;
-                    elements.threatPill.textContent = threat.name;
-
-                    elements.targetThreatPill.className = `mt-2 threat-pill text-black text-xs font-bold py-1 px-3 rounded-full inline-block text-center ${threat.class}`;
-                    elements.targetThreatPill.textContent = threat.name.split(',')[0]; // Short version for profile
-                    
-                    elements.aiAnalysisButton.classList.toggle('hidden', threat.level < 2);
-                },
-                updateSubjectDisplay: (subject) => {
-                    elements.subjectName.textContent = subject.name;
-                    elements.subjectAvatarText.textContent = subject.avatar;
-                },
-                updateStatsDisplay: (bpm, risk) => {
-                    elements.statBpm.textContent = bpm;
-                    elements.statRisk.textContent = `${risk}%`;
-                    ['statBpm', 'statRisk'].forEach(el => {
-                        elements[el].classList.remove('highlight');
-                        void elements[el].offsetWidth; // Trigger reflow
-                        elements[el].classList.add('highlight');
+                    const particleCount = 5000;
+                    const positions = new Float32Array(particleCount * 3);
+                    for (let i = 0; i < particleCount * 3; i++) {
+                        positions[i] = (Math.random() - 0.5) * 10;
+                    }
+                    const particlesGeometry = new THREE.BufferGeometry();
+                    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                    const particlesMaterial = new THREE.PointsMaterial({
+                        size: 0.015,
+                        color: new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--accent-cyan')),
+                        transparent: true,
+                        opacity: 0.7,
+                        blending: THREE.AdditiveBlending
                     });
-                },
-                addLogEntry: (message, level = 'info') => {
-                    const li = document.createElement('li');
-                    li.className = 'log-entry flex items-center space-x-3';
-                    const dotColors = { info: 'bg-green-400', warn: 'bg-yellow-400', error: 'bg-orange-400', critical: 'bg-red-400', ai: 'bg-purple-400', profile: 'bg-blue-400' };
-                    const time = new Date().toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                    li.innerHTML = `<span class="w-2 h-2 rounded-full ${dotColors[level]} flex-shrink-0"></span><span class="text-slate-400">${time}</span><span class="flex-1">${message}</span>`;
-                    elements.activityLog.prepend(li);
-                    if (elements.activityLog.children.length > 15) {
-                        elements.activityLog.lastElementChild.remove();
-                    }
-                },
-                toggleModal: (show, title = '', content = '') => {
-                    if (show) {
-                        elements.modalTitle.textContent = title;
-                        elements.modalContent.innerHTML = content;
-                        elements.modal.classList.remove('hidden');
-                        setTimeout(() => elements.modal.style.opacity = '1', 10);
-                    } else {
-                        elements.modal.style.opacity = '0';
-                        setTimeout(() => elements.modal.classList.add('hidden'), 300);
+                    this.particles = new THREE.Points(particlesGeometry, particlesMaterial);
+                    this.scene.add(this.particles);
+
+                    window.addEventListener('resize', this.onWindowResize.bind(this));
+                    window.addEventListener('mousemove', this.onMouseMove.bind(this));
+                    this.animate();
+                }
+
+                onWindowResize() {
+                    this.camera.aspect = window.innerWidth / window.innerHeight;
+                    this.camera.updateProjectionMatrix();
+                    this.renderer.setSize(window.innerWidth, window.innerHeight);
+                }
+
+                onMouseMove(event) {
+                    this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                    this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+                }
+
+                animate() {
+                    requestAnimationFrame(this.animate.bind(this));
+                    const elapsedTime = new Date().getTime() * 0.0001;
+                    this.particles.rotation.y = elapsedTime * 0.5;
+                    this.particles.position.x += (this.mouse.x * 0.5 - this.particles.position.x) * 0.02;
+                    this.particles.position.y += (this.mouse.y * 0.5 - this.particles.position.y) * 0.02;
+                    this.renderer.render(this.scene, this.camera);
+                }
+            }
+            
+            /**
+             * SmazakGame class for managing the entire game logic.
+             */
+            class SmazakGame {
+                constructor() {
+                    this.state = { gameState: 'MENU', isScanning: false, threatIndex: 0, currentSubject: null, timers: { threat: null, scanStep: null } };
+                    this.elements = { stage: document.getElementById('stage'), scenes: { game: document.getElementById('scene-game'), menu: document.getElementById('scene-menu') }, overlays: { pause: document.getElementById('overlay-pause') }, buttons: { play: document.getElementById('play-button'), scan: document.getElementById('scan-button'), pause: document.getElementById('pause-button'), resume: document.getElementById('resume-button'), profile: document.getElementById('profile-button'), back: document.getElementById('back-button') }, hud: { status: document.getElementById('hud-status'), subtext: document.getElementById('hud-subtext'), bpm: document.getElementById('stat-bpm'), risk: document.getElementById('stat-risk'), threatGauge: document.getElementById('threat-gauge-fill') }, scanner: document.getElementById('scanner'), toastContainer: document.getElementById('toast-container'), overlay: { title: document.getElementById('overlay-title'), content: document.getElementById('overlay-content') } };
+                    this.init();
+                }
+
+                init() {
+                    this.scaleStage();
+                    this.setupEventListeners();
+                    this.setGameState('MENU');
+                    new InteractiveBackground(document.getElementById('webgl-canvas'));
+                }
+                
+                // --- UTILITIES ---
+                randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+                getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
+                vibrate = (pattern) => { if (navigator.vibrate) navigator.vibrate(pattern); };
+                
+                // --- SETUP & STATE MANAGEMENT ---
+                scaleStage = () => {
+                    const scale = Math.min(window.innerWidth / 360, window.innerHeight / 640);
+                    this.elements.stage.style.transform = `scale(${scale})`;
+                };
+
+                setGameState(newState) {
+                    this.state.gameState = newState;
+                    Object.values(this.elements.scenes).forEach(s => s.classList.add('hidden'));
+                    this.elements.overlays.pause.classList.add('hidden');
+
+                    switch (newState) {
+                        case 'MENU': this.elements.scenes.menu.classList.remove('hidden'); this.stopThreatTimer(); break;
+                        case 'PLAYING': this.elements.scenes.game.classList.remove('hidden'); this.startThreatTimer(); break;
+                        case 'PAUSED': this.elements.scenes.game.classList.remove('hidden'); this.elements.overlays.pause.classList.remove('hidden'); this.stopThreatTimer(); this.updateOverlayContent('pause'); break;
                     }
                 }
-            };
+                
+                setupEventListeners() {
+                    window.addEventListener('resize', this.scaleStage);
+                    this.elements.buttons.play.addEventListener('pointerdown', () => this.startGame());
+                    this.elements.buttons.scan.addEventListener('pointerdown', () => this.runScanSequence());
+                    this.elements.buttons.pause.addEventListener('pointerdown', () => this.setGameState('PAUSED'));
+                    this.elements.buttons.resume.addEventListener('pointerdown', () => this.setGameState('PLAYING'));
+                    this.elements.buttons.profile.addEventListener('pointerdown', () => this.updateOverlayContent('profile'));
+                    this.elements.buttons.back.addEventListener('pointerdown', () => this.updateOverlayContent('pause'));
+                    this.elements.scanner.addEventListener('pointerdown', () => { this.toast('Senzor aktivní.'); this.vibrate(10); });
+                    document.addEventListener('keydown', (e) => { if (e.key === "Escape" && this.state.gameState === 'PAUSED') this.setGameState('PLAYING'); });
+                }
 
-            // --- CORE LOGIC FUNCTIONS ---
-            const core = {
-                changeSubject: () => {
-                    appState.currentSubject = utils.getRandomElement(DATA.subjects);
-                    ui.updateSubjectDisplay(appState.currentSubject);
-                },
-                updateThreatLevel: () => {
-                    if (appState.isProcessing) return;
-                    appState.currentThreatIndex = (appState.currentThreatIndex + 1) % DATA.threatLevels.length;
-                    const newThreat = DATA.threatLevels[appState.currentThreatIndex];
-                    ui.updateThreatDisplay(newThreat);
-                    const logLevels = ['info', 'warn', 'error', 'critical'];
-                    ui.addLogEntry(`⚠️ Hrozba: ${newThreat.name}`, logLevels[newThreat.level]);
+                // --- GAME LOGIC ---
+                startGame() {
+                    this.setSubject();
+                    this.state.threatIndex = 0;
+                    this.updateThreat(0);
+                    this.updateStats();
+                    this.setHUD('READY', 'Čekám na lajnu', 'NAJDI NEJBLIŽŠÍHO SMÁŽU');
+                    this.setGameState('PLAYING');
+                }
 
-                    if (newThreat.level === 3 && navigator.vibrate) navigator.vibrate([100, 50, 100]);
-                },
-                runScanSequence: () => {
-                    if (appState.isProcessing) return;
-                    appState.isProcessing = true;
-                    elements.scanButton.disabled = true;
-                    
-                    let counter = 0;
-                    const getRandomLog = () => {
-                        const pool = appState.currentSubject.logPhrases.length > 0 ? appState.currentSubject.logPhrases : DATA.genericLogPhrases;
-                        return utils.getRandomElement(pool);
-                    };
-                    
-                    ui.addLogEntry(getRandomLog(), 'info');
+                runScanSequence() {
+                    if (this.state.isScanning) return;
+                    this.state.isScanning = true;
+                    this.elements.buttons.scan.disabled = true;
+                    this.elements.stage.classList.add('scan-active');
+                    setTimeout(() => this.elements.stage.classList.remove('scan-active'), 500);
 
-                    appState.timers.scan = setInterval(() => {
-                        const state = DATA.scanStates[counter];
-                        elements.scannerStatus.textContent = state.status;
-                        elements.scannerStatus.classList.add('glitch-text');
-                        
-                        const toastPool = appState.currentSubject.toastPhrases.length > 0 ? appState.currentSubject.toastPhrases : [state.subtext];
-                        elements.scannerSubtext.textContent = utils.getRandomElement(toastPool);
-                        
-                        ui.updateStatsDisplay(utils.randomInt(70, 160), utils.randomInt(10, 95));
-                        ui.addLogEntry(getRandomLog(), 'info');
-                        
-                        counter++;
-                        if (counter >= DATA.scanStates.length) {
-                            clearInterval(appState.timers.scan);
-                            elements.scannerStatus.classList.remove('glitch-text');
-                            elements.scannerStatus.textContent = 'READY';
-                            elements.scannerSubtext.textContent = 'Čekám na další lajnu';
-                            elements.scanButton.disabled = false;
-                            appState.isProcessing = false;
-                            ui.addLogEntry('Skenování dokončeno, systém připraven.', 'info');
-                            core.changeSubject();
+                    let step = 0;
+                    const sequenceStep = () => {
+                        if (step >= DATA.scanStates.length) {
+                            this.setHUD('READY', 'Čekám na další lajnu', 'NAJDI NEJBLIŽŠÍHO SMÁŽU');
+                            this.elements.buttons.scan.disabled = false;
+                            this.state.isScanning = false;
+                            this.setSubject();
+                            this.updateThreat(-1);
+                            this.toast('Sken hotový.');
+                            return;
                         }
-                    }, 1125);
-                },
-                getThreatAnalysis: () => {
-                    ui.addLogEntry('Načítám lokální analýzu...', 'ai');
-                    const responses = DATA.analysis[appState.currentThreatIndex];
-                    const randomResponse = utils.getRandomElement(responses);
-                    ui.toggleModal(true, 'PORADNA OD DEALERŮ', randomResponse);
-                },
-                getSubjectProfile: () => {
-                    ui.addLogEntry('Vytahuju info o smažce...', 'profile');
-                    const profile = appState.currentSubject.profile || 'Profil nenalezen. Asi je to novej ksicht.';
-                    ui.toggleModal(true, `KARTA: ${appState.currentSubject.name.toUpperCase()}`, profile);
+                        const scanState = DATA.scanStates[step];
+                        const subtextPool = this.state.currentSubject?.toastPhrases || [scanState.subtext];
+                        this.setHUD(scanState.status, this.getRandomElement(subtextPool), scanState.status);
+                        this.updateStats();
+                        this.toast(this.getRandomElement(this.state.currentSubject?.logPhrases || ["..."]));
+                        if (this.state.threatIndex < DATA.threatLevels.length - 1) this.updateThreat(1);
+                        step++;
+                        this.state.timers.scanStep = setTimeout(sequenceStep, 1200);
+                    };
+                    sequenceStep();
                 }
-            };
 
-            // --- INITIALIZATION ---
-            function init() {
-                core.changeSubject();
-                ui.updateThreatDisplay(DATA.threatLevels[appState.currentThreatIndex]);
-                ui.updateStatsDisplay(utils.randomInt(70, 90), utils.randomInt(10, 25));
-                ui.addLogEntry('Radar nastartován, systém sjetej.', 'info');
+                // --- UI & DATA UPDATES ---
+                updateOverlayContent(mode) {
+                    this.elements.buttons.resume.classList.toggle('hidden', mode === 'profile');
+                    this.elements.buttons.profile.classList.toggle('hidden', mode === 'profile');
+                    this.elements.buttons.back.classList.toggle('hidden', mode !== 'profile');
+                    if (mode === 'pause') {
+                        this.elements.overlay.title.textContent = 'PAUZA';
+                        this.elements.overlay.content.innerHTML = DATA.analysis[this.state.threatIndex] || "Chyba v matrixu.";
+                        this.elements.buttons.resume.textContent = 'POKRAČOVAT';
+                        this.elements.buttons.profile.textContent = 'KARTA CÍLE';
+                    } else if (mode === 'profile' && this.state.currentSubject) {
+                        this.elements.overlay.title.textContent = `KARTA: ${this.state.currentSubject.name.toUpperCase()}`;
+                        this.elements.overlay.content.innerHTML = this.state.currentSubject.profile;
+                        this.elements.buttons.back.textContent = 'ZPĚT';
+                    }
+                }
+                
+                setSubject() { this.state.currentSubject = this.getRandomElement(DATA.subjects); }
+                
+                updateThreat(delta) {
+                    if (this.state.isScanning && delta > 0) return;
+                    this.state.threatIndex = Math.max(0, Math.min(DATA.threatLevels.length - 1, this.state.threatIndex + delta));
+                    this.elements.hud.threatGauge.style.width = `${DATA.threatLevels[this.state.threatIndex].width}%`;
+                    if (this.state.threatIndex === DATA.threatLevels.length - 1) this.vibrate([80, 40, 80]);
+                }
 
-                appState.timers.threat = setInterval(core.updateThreatLevel, 8000);
+                updateStats() {
+                    this.elements.hud.bpm.textContent = this.randomInt(70, 160);
+                    this.elements.hud.risk.textContent = `${this.randomInt(10, 95)}%`;
+                    [this.elements.hud.bpm.parentElement, this.elements.hud.risk.parentElement].forEach(el => {
+                        el.classList.add('highlight');
+                        setTimeout(() => el.classList.remove('highlight'), 500);
+                    });
+                }
 
-                const debouncedScan = utils.debounce(core.runScanSequence, 500);
-                elements.scanButton.addEventListener('click', debouncedScan);
-                elements.aiAnalysisButton.addEventListener('click', core.getThreatAnalysis);
-                elements.profileButton.addEventListener('click', core.getSubjectProfile);
-                elements.modalCloseButton.addEventListener('click', () => ui.toggleModal(false));
-                elements.modal.addEventListener('click', (e) => { if (e.target === elements.modal) ui.toggleModal(false); });
-                document.addEventListener('keydown', (e) => { if (e.key === "Escape") ui.toggleModal(false); });
+                setHUD(status, subtext, buttonText) {
+                    this.elements.hud.status.textContent = status;
+                    this.elements.hud.subtext.textContent = subtext;
+                    this.elements.buttons.scan.textContent = buttonText;
+                }
+
+                toast(message) {
+                    if (this.elements.toastContainer.children.length >= 5) this.elements.toastContainer.lastElementChild.remove();
+                    const toastEl = document.createElement('div');
+                    toastEl.className = 'toast';
+                    toastEl.textContent = message;
+                    this.elements.toastContainer.prepend(toastEl);
+                    setTimeout(() => toastEl.remove(), 3000);
+                }
+                
+                // --- TIMERS ---
+                startThreatTimer() { this.stopThreatTimer(); this.state.timers.threat = setInterval(() => this.updateThreat(1), 8000); }
+                stopThreatTimer() { clearInterval(this.state.timers.threat); }
             }
 
-            init();
+            // --- INITIALIZE GAME ---
+            new SmazakGame();
         });
     </script>
 </body>
